@@ -6,8 +6,6 @@ A comprehensive system that bridges the Model Context Protocol (MCP) with the De
 
 MCP Debug Bridge provides a complete debugging toolkit for AI assistants, allowing them to interact with VS Code/Cursor debugging features through a standardized MCP server. The system translates MCP commands into DAP operations, enabling real-time debugging control, variable inspection, execution flow management, and comprehensive session analysis.
 
-<img width="3132" height="1118" alt="image" src="https://github.com/user-attachments/assets/2d072c13-be73-49bc-88e6-46cf40c04fd2" />
-
 ## Features
 
 ### 🎮 **Execution Control**
