@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "mcp-debug-bridge": {
+      "url": "http://localhost:3001/mcp"
+    }
+  }
+}

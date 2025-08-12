@@ -1,0 +1,50 @@
+---
+alwaysApply: false
+description: To ensure consistent architecture, maintainability, and clear communication standards across the codebase
+---
+
+#### **1. DTO (Data Transfer Object) Pattern for Communication**
+
+All WebSocket communication between the `mcp-server` and the `dap-bridge-extension` must be strictly typed using DTOs.
+
+-   **Where to define**: All message interfaces must be centralized in the file `packages/dap-bridge-extension/src/types.ts`.
+-   **Purpose**: Ensures a clear and explicit data contract between services, reducing communication errors and making debugging easier. Prevents the need to guess the structure of messages.
+
+#### **2. Command Pattern for DAP Actions**
+
+The `dap-bridge-extension` uses the Command Pattern to process requests received from the server.
+
+-   **Implementation**:
+    -   The `CommandHandler` interface (`command-handler.ts`) defines the contract for all commands.
+    -   `CommandManager` (`command-handler.ts`) is responsible for registering and dispatching the appropriate handler for a command, abstracting the routing logic.
+    -   Each complex command (such as `setBreakpointsInFiles`) has its own handler class. Simple commands can use the `DefaultCommandHandler`.
+-   **Purpose**:
+    -   **Decoupling**: The main extension logic (`extension.ts`) does not need to know the implementation details of each command.
+    -   **Extensibility**: To add a new command, simply create a new class implementing `CommandHandler` and register it in the `CommandManager`, without modifying the existing execution flow. This follows the Open/Closed Principle.
+    -   **Clarity**: Avoids long conditionals (`if/else` or `switch`) in the main message handling function.
+
+#### **3. Single Responsibility Principle (SRP)**
+
+Each class and function must have a single, well-defined responsibility.
+
+-   **Project Examples**:
+    -   `extension.ts`: Manages the extension lifecycle and WebSocket connection.
+    -   `command-handler.ts`: Defines and manages the execution of DAP commands.
+    -   `types.ts`: Defines data contracts.
+    -   `DebuggerTool.ts`: Acts as the server-side interface for debugging operations, formatting results for the end client.
+-   **Purpose**: Makes the code easier to understand, test, and maintain.
+
+#### **4. Language, Comments, and Naming**
+
+-   **English as Standard**: All code, including comments, documentation, variable names, and commit messages, must be written in **English**. This ensures consistency and accessibility for collaborators from different backgrounds.
+-   **Clear Comments**: Only comment on the "why" (the intention) of a code block, not the "what" (which the code itself should describe).
+-   **File Naming Convention**: All file names must use **kebab-case** (lowercase words separated by hyphens, e.g., `command-handler.ts`).
+
+#### **5. Type-Only Imports**
+
+-   When importing types from other modules, always use the `import type` syntax.
+    -   **Example**:
+        ```typescript
+        import type { ServerConfig } from "../types"
+        ```
+-   **Purpose**: This ensures that type imports are erased at compile time, reducing bundle size and avoiding potential circular dependencies at runtime.

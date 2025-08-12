@@ -1,0 +1,34 @@
+### Create a new todo
+POST http://localhost:3000/todos
+Content-Type: application/json
+
+{
+  "title": "{{$guid}}",
+  "completed": true
+}
+
+###
+
+### Get all todos
+GET http://localhost:3000/todos
+
+###
+
+### Get a single todo by id
+GET http://localhost:3000/todos/1
+
+###
+
+### Update a todo by id
+PUT http://localhost:3000/todos/1
+Content-Type: application/json
+
+{
+  "title": "Buy almond milk",
+  "completed": true
+}
+
+###
+
+### Delete a todo by id
+DELETE http://localhost:3000/todos/1

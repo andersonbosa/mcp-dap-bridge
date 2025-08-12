@@ -1,0 +1,58 @@
+{
+  "name": "mcp-server-boilerplate",
+  "version": "1.0.0",
+  "description": "MCP Server Boilerplate with Docker support",
+  "main": "dist/index.js",
+  "scripts": {
+    "inspect": "DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector node dist/index.js",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf -- ./dist",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "docker:build": "docker build -t mcp-server:latest .",
+    "docker:build:dev": "docker build -f Dockerfile.dev -t mcp-server:dev .",
+    "docker:run": "docker-compose up -d",
+    "docker:run:dev": "docker-compose -f docker-compose.dev.yml up",
+    "docker:stop": "docker-compose down",
+    "docker:logs": "docker-compose logs -f mcp-server",
+    "docker:shell": "docker-compose exec mcp-server sh",
+    "docker:clean": "docker-compose down -v && docker image prune -f"
+  },
+  "keywords": [
+    "mcp",
+    "server",
+    "typescript",
+    "docker"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/inspector": "^0.16.2",
+    "@modelcontextprotocol/sdk": "^1.17.2",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.2.1",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.32.0",
+    "jest": "^30.0.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

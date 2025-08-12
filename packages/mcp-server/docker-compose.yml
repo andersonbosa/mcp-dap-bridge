@@ -1,0 +1,43 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=info
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      # Mount volumes if your MCP server needs to access files
+      - ./data:/app/data:ro
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Health check')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add a database or other services
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: mcp-redis
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - mcp-network
+  #   restart: unless-stopped
+
+networks:
+  mcp-network:
+    driver: bridge

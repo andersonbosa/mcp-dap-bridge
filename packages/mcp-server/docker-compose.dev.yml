@@ -1,0 +1,27 @@
+# docker-compose.dev.yml - For development
+version: "3.8"
+
+services:
+  mcp-server-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mcp-server-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - LOG_LEVEL=debug
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge

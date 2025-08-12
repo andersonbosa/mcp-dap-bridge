@@ -1,0 +1,331 @@
+---
+alwaysApply: false
+description: Guidelines for secure, compliant, robust, and well-documented MCP server development, ensuring reliable interoperability with MCP clients.
+# MCP Server Development Guidelines
+
+## Overview
+
+This document provides essential guidelines for developing and maintaining MCP (Model Context Protocol) servers that comply with the official specification. These guidelines ensure security, reliability, and interoperability with MCP clients.
+
+## 🚀 Quick Start
+
+### Core Principles
+1. **Security First**: Always implement DNS rebinding protection and validate origins
+2. **Spec Compliance**: Follow the MCP specification strictly for interoperability
+3. **Error Handling**: Provide clear, actionable error messages in JSON-RPC format
+4. **Session Management**: Implement proper session lifecycle management
+5. **Documentation**: All code should be self-documenting with clear comments in English
+
+## 📋 MCP Specification Compliance
+
+### Required HTTP Methods
+```typescript
+// ✅ DO: Implement all required HTTP methods
+app.post("/mcp", handlePostRequest)    // JSON-RPC messages
+app.get("/mcp", handleGetRequest)      // SSE streams
+app.delete("/mcp", handleDeleteRequest) // Session termination
+app.options("/mcp", handleOptionsRequest) // CORS preflight
+```
+
+### Protocol Version Validation
+```typescript
+// ✅ DO: Validate MCP-Protocol-Version header
+const protocolVersion = req.headers['mcp-protocol-version']
+const supportedVersions = ['2025-06-18', '2025-03-26']
+if (protocolVersion && !supportedVersions.includes(protocolVersion)) {
+  return res.status(400).json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Unsupported protocol version" }
+  })
+}
+
+// ❌ DON'T: Ignore protocol version headers
+```
+
+### Accept Header Validation
+```typescript
+// ✅ DO: Validate Accept headers for different request types
+// POST requests
+if (!acceptHeader.includes('application/json') || 
+    !acceptHeader.includes('text/event-stream')) {
+  return res.status(400).json(...)
+}
+
+// GET requests (SSE)
+if (!acceptHeader.includes('text/event-stream')) {
+  return res.status(400).json(...)
+}
+
+// ❌ DON'T: Accept requests without proper Accept headers
+```
+
+## 🔒 Security Requirements
+
+### DNS Rebinding Protection
+```typescript
+// ✅ DO: Implement strict Origin validation
+const allowedOrigins = [
+  'http://localhost:6274',    // MCP Inspector
+  'http://127.0.0.1:6274',
+  `http://localhost:${port}`,
+  `http://127.0.0.1:${port}`
+]
+
+if (origin && !allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+  return res.status(403).json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Origin not allowed" }
+  })
+}
+
+// ❌ DON'T: Allow requests from any origin
+// ❌ DON'T: Use wildcard (*) origins in production
+```
+
+### Server Binding
+```typescript
+// ✅ DO: Bind only to localhost for security
+httpServer.listen(port, "127.0.0.1", callback)
+
+// ❌ DON'T: Bind to all interfaces
+httpServer.listen(port, callback) // This binds to 0.0.0.0
+httpServer.listen(port, "0.0.0.0", callback)
+```
+
+### CORS Configuration
+```typescript
+// ✅ DO: Set specific CORS headers
+res.header('Access-Control-Allow-Origin', validatedOrigin)
+res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+res.header('Access-Control-Allow-Headers', 
+  'Content-Type, Accept, MCP-Session-Id, MCP-Protocol-Version, Last-Event-ID')
+res.header('Access-Control-Allow-Credentials', 'false')
+
+// ❌ DON'T: Use wildcard CORS in production
+res.header('Access-Control-Allow-Origin', '*')
+```
+
+## 🛠️ Tool Development
+
+### Input Schema Requirements
+```typescript
+// ✅ DO: Always use proper JSON Schema format
+readonly inputSchema = {
+  type: "object",
+  properties: {
+    param: {
+      type: "string",
+      description: "Parameter description"
+    }
+  },
+  required: ["param"]
+}
+
+// For tools with no parameters:
+readonly inputSchema = {
+  type: "object",
+  properties: {},
+  required: []
+}
+
+// ❌ DON'T: Use empty objects or invalid schemas
+readonly inputSchema = {} // This causes ZodError
+readonly inputSchema = { type: "string" } // Invalid for MCP tools
+```
+
+### Tool Response Format
+```typescript
+// ✅ DO: Return consistent response format
+return {
+  content: [
+    {
+      type: "text",
+      text: "Response message"
+    }
+  ]
+}
+
+// ❌ DON'T: Return inconsistent formats
+return "string response" // Invalid
+return { result: "data" } // Non-standard
+```
+
+### Error Handling in Tools
+```typescript
+// ✅ DO: Catch and format errors properly
+async execute(args: any): Promise<any> {
+  try {
+    const result = await performOperation(args)
+    return { content: [{ type: "text", text: result }] }
+  } catch (error: any) {
+    logger.error(`Tool execution failed:`, error)
+    return {
+      content: [{
+        type: "text",
+        text: `Error: ${error.message}`
+      }]
+    }
+  }
+}
+
+// ❌ DON'T: Let errors bubble up unhandled
+// ❌ DON'T: Return raw error objects
+```
+
+## 📡 Session Management
+
+### Session Creation
+```typescript
+// ✅ DO: Create sessions only for initialize requests
+if (!sessionId && isInitializeRequest(req.body)) {
+  transport = await this.createNewTransport()
+}
+
+// ✅ DO: Use cryptographically secure session IDs
+sessionIdGenerator: () => uuidv4()
+
+// ❌ DON'T: Create sessions for non-initialize requests
+// ❌ DON'T: Use predictable session IDs
+```
+
+### Session Validation
+```typescript
+// ✅ DO: Handle missing/invalid sessions properly
+if (sessionId && !this.transports[sessionId]) {
+  return res.status(404).json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Session not found" }
+  })
+}
+
+// ❌ DON'T: Ignore session validation
+// ❌ DON'T: Create new sessions silently
+```
+
+### Session Termination
+```typescript
+// ✅ DO: Support explicit session termination
+if (req.method === 'DELETE') {
+  if (this.transports[sessionId]) {
+    delete this.transports[sessionId]
+    logger.info(`Session terminated by client: ${sessionId}`)
+    return res.status(200).send("Session terminated")
+  }
+}
+
+// ❌ DON'T: Ignore DELETE requests
+// ❌ DON'T: Leave orphaned session data
+```
+
+## 🚫 Common Pitfalls
+
+### Configuration Issues
+```typescript
+// ❌ DON'T: Hardcode configuration values
+const PORT = 3001 // Bad
+
+// ✅ DO: Use environment-based configuration
+const PORT = parseInt(process.env.PORT || "3001", 10)
+```
+
+### Middleware Order
+```typescript
+// ✅ DO: Apply middleware in correct order
+app.use(express.json())        // Body parsing first
+app.use(securityMiddleware)    // Security checks
+app.use(corsMiddleware)        // CORS headers
+// Then route handlers
+
+// ❌ DON'T: Apply CORS after route handlers
+```
+
+### Error Response Format
+```typescript
+// ✅ DO: Use consistent JSON-RPC error format
+{
+  jsonrpc: "2.0",
+  error: {
+    code: -32000,
+    message: "Descriptive error message"
+  },
+  id: null
+}
+
+// ❌ DON'T: Return inconsistent error formats
+res.status(400).send("Error") // Plain text
+res.status(400).json({ error: "msg" }) // Non-standard format
+```
+
+## 📝 Documentation Standards
+
+### Code Comments
+- All comments must be in English
+- Document the "why" not just the "what"
+- Include specification references where applicable
+
+```typescript
+// ✅ DO: Reference specifications and explain rationale
+// Validate MCP-Protocol-Version header as per MCP specification 2025-06-18
+// This ensures compatibility with supported protocol versions
+
+// ❌ DON'T: State the obvious
+// Set status to 400
+```
+
+### Tool Documentation
+```typescript
+// ✅ DO: Provide comprehensive tool descriptions
+readonly description = "Gets the current call stack from the active debug session. Requires an active debugging session in VSCode/Cursor."
+
+// ❌ DON'T: Use vague descriptions
+readonly description = "Gets stack trace"
+```
+
+## 🧪 Testing Guidelines
+
+### Unit Tests
+- Test all error conditions
+- Validate schema compliance
+- Test session management scenarios
+- Verify security controls
+
+### Integration Tests
+- Test with actual MCP clients
+- Validate protocol compliance
+- Test concurrent sessions
+- Verify CORS functionality
+
+## 🔍 Debugging
+
+### Logging Best Practices
+```typescript
+// ✅ DO: Use structured logging
+logger.info('Session initialized', { sessionId, clientInfo })
+logger.error('Tool execution failed', { toolName, error: error.message })
+
+// ❌ DON'T: Log sensitive data
+logger.info('Request:', req) // May contain sensitive headers
+```
+
+### Development Tools
+- Use MCP Inspector for testing
+- Validate against specification
+- Test with multiple client implementations
+- Monitor for memory leaks in long-running sessions
+
+## 📚 Resources
+
+- [MCP Specification](https://modelcontextprotocol.io/specification/2025-06-18/)
+- [MCP SDK Documentation](https://github.com/modelcontextprotocol/typescript-sdk)
+- [Security Best Practices](https://modelcontextprotocol.io/specification/2025-06-18/basic/security)
+
+## 🔄 Version History
+
+- v1.0 - Initial guidelines based on MCP specification 2025-06-18
+- Added compliance requirements for Streamable HTTP transport
+- Security guidelines for DNS rebinding protection
+- Tool development best practices
+
+---
+
+**Remember**: When in doubt, always refer to the official MCP specification and prioritize security and compliance over convenience.
