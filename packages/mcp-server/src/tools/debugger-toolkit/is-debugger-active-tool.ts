@@ -1,6 +1,8 @@
-import { BaseTool } from "../base-tool";
-import { logger } from "../../utils/logger";
-import { WebSocketBridge } from "../../server/dependencies/websocket-bridge";
+import { BaseTool } from "../base-tool"
+import { logger } from "../../utils/logger"
+import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { ToolResponse } from "../../types"
+import { StandardCommandResponse, IsDebuggerActiveResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 export class IsDebuggerActiveTool extends BaseTool {
   readonly name = "isDebuggerActive";
@@ -12,30 +14,31 @@ export class IsDebuggerActiveTool extends BaseTool {
   };
 
   constructor(private readonly wsBridge: WebSocketBridge) {
-    super();
+    super()
   }
 
-  async execute(): Promise<any> {
+  async execute(): Promise<ToolResponse> {
     try {
-      logger.info("[DebuggerToolkit] Requesting to check debugger status...");
-      const response = await this.wsBridge.sendDapRequest('isDebuggerActive', {});
+      logger.info("[DebuggerToolkit] Requesting to check debugger status...")
+      const response: StandardCommandResponse<IsDebuggerActiveResponse> = await this.wsBridge.sendDapRequest('isDebuggerActive', {})
 
-      if (response.body.error) {
-        throw new Error(`Error checking debugger status: ${response.body.error}`);
+      if (isErrorResponse(response)) {
+        throw new Error(`Error checking debugger status: ${response.error}`)
       }
 
-      const resultText = response.body.isActive
+      const isActive = response.data?.isActive ?? false
+      const resultText = isActive
         ? "Yes, a debug session is active and ready."
-        : "No, there is no active debug session.";
+        : "No, there is no active debug session."
 
       return {
         content: [{ type: "text", text: resultText }],
-      };
+      }
     } catch (error: any) {
-      logger.error(`[DebuggerToolkit] Error executing isDebuggerActive:`, error);
+      logger.error(`[DebuggerToolkit] Error executing isDebuggerActive:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
-      };
+      }
     }
   }
 }

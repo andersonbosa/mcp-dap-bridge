@@ -39,6 +39,7 @@ Each class and function must have a single, well-defined responsibility.
 -   **English as Standard**: All code, including comments, documentation, variable names, and commit messages, must be written in **English**. This ensures consistency and accessibility for collaborators from different backgrounds.
 -   **Clear Comments**: Only comment on the "why" (the intention) of a code block, not the "what" (which the code itself should describe).
 -   **File Naming Convention**: All file names must use **kebab-case** (lowercase words separated by hyphens, e.g., `command-handler.ts`).
+-   Only add comments when asked by.
 
 #### **5. Type-Only Imports**
 

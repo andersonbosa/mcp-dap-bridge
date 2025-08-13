@@ -1,5 +1,5 @@
 {
-  "name": "mcp-server-boilerplate",
+  "name": "@andersonbosa/mcp-server",
   "version": "1.0.0",
   "description": "MCP Server Boilerplate with Docker support",
   "main": "dist/index.js",
@@ -32,6 +32,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "@andersonbosa/core-bridge": "file:../core-bridge",
     "@modelcontextprotocol/inspector": "^0.16.2",
     "@modelcontextprotocol/sdk": "^1.17.2",
     "dotenv": "^17.2.1",

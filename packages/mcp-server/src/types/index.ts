@@ -32,3 +32,15 @@ export interface MCPServerTransport {
    */
   getConfig(): ServerConfig
 }
+
+
+export interface ToolResponseContent {
+  type: string
+  [key: string]: any
+}
+
+export interface ToolResponse {
+  content: ToolResponseContent[]
+  // Add other top-level fields if the MCP client supports them, e.g.:
+  // metadata?: Record<string, any>;
+}

@@ -1,6 +1,6 @@
 {
-  "name": "mcp-dap-bridge",
-  "displayName": "mcp-dap-bridge",
+  "name": "@andersonbosa/mcp-dap-bridge-extension",
+  "displayName": "MCP DAP Bridge Extension",
   "description": "description of my extension",
   "version": "0.0.1",
   "engines": {
@@ -55,9 +55,11 @@
     "ts-loader": "^9.5.2",
     "typescript": "^5.9.2",
     "webpack": "^5.101.0",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@andersonbosa/core-bridge": "file:../core-bridge",
     "ws": "^8.18.3"
   }
 }
