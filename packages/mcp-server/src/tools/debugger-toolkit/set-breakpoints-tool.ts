@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse, SetBreakpointsInFilesResponse } from "@andersonbosa/core-bridge"
 
 export class SetBreakpointsTool extends BaseTool {
   readonly name = "setBreakpoints";
@@ -41,13 +42,13 @@ export class SetBreakpointsTool extends BaseTool {
       }
 
       logger.info("[DebuggerToolkit] Requesting to set breakpoints...")
-      const response = await this.wsBridge.sendDapRequest('setBreakpointsInFiles', { locations: args.locations })
+      const response: StandardCommandResponse<SetBreakpointsInFilesResponse> = await this.wsBridge.sendDapRequest('setBreakpointsInFiles', { locations: args.locations })
 
-      if (response.body.error) {
-        throw new Error(`Error setting breakpoints: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error setting breakpoints: ${response.error}`)
       }
 
-      const results = response.body.results
+      const results = response.data?.results
       if (!results) {
         throw new Error("Invalid response from the extension when setting breakpoints.")
       }

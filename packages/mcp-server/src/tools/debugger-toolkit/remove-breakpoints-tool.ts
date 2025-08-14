@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type RemoveBreakpointsToolInput = {
   source?: { path?: string; name?: string }
@@ -53,13 +54,13 @@ export class RemoveBreakpointsTool extends BaseTool {
 
       if (args.removeAll) {
         // Remove all breakpoints by setting empty breakpoints for all sources
-        const response = await this.wsBridge.sendDapRequest("setBreakpoints", {
+        const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("setBreakpoints", {
           source: { path: "" },
           breakpoints: []
         })
 
-        if (response.body.error) {
-          throw new Error(`Error removing all breakpoints: ${response.body.error}`)
+        if (isErrorResponse(response)) {
+          throw new Error(`Error removing all breakpoints: ${response.error}`)
         }
 
         return {
@@ -78,13 +79,13 @@ export class RemoveBreakpointsTool extends BaseTool {
         ? currentBreakpoints.filter(bp => !args.lines!.includes(bp.line))
         : [] // Remove all from this file
 
-      const response = await this.wsBridge.sendDapRequest("setBreakpoints", {
+      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("setBreakpoints", {
         source: args.source,
         breakpoints: breakpointsToKeep
       })
 
-      if (response.body.error) {
-        throw new Error(`Error removing breakpoints: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error removing breakpoints: ${response.error}`)
       }
 
       const removedCount = currentBreakpoints.length - breakpointsToKeep.length

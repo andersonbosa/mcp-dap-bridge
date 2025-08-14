@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type GetThreadInfoToolInput = {
   threadId: number
@@ -29,13 +30,13 @@ export class GetThreadInfoTool extends BaseTool {
       logger.info(`[DebuggerToolkit] Getting information for thread ${args.threadId}...`)
       
       // First get all threads to find the specific one
-      const threadsResponse = await this.wsBridge.sendDapRequest("threads", {})
+      const threadsResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("threads", {})
 
-      if (threadsResponse.body.error) {
-        throw new Error(`Error getting threads: ${threadsResponse.body.error}`)
+      if (isErrorResponse(threadsResponse)) {
+        throw new Error(`Error getting threads: ${threadsResponse.error}`)
       }
 
-      const threads = threadsResponse.body.threads
+      const threads = threadsResponse.data?.threads
       const targetThread = threads?.find((t: any) => t.id === args.threadId)
 
       if (!targetThread) {
@@ -50,12 +51,12 @@ export class GetThreadInfoTool extends BaseTool {
       // Get stack trace for the thread
       let stackInfo = ""
       try {
-        const stackResponse = await this.wsBridge.sendDapRequest("stackTrace", { 
+        const stackResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("stackTrace", { 
           threadId: args.threadId 
         })
 
-        if (!stackResponse.body.error && stackResponse.body.stackFrames) {
-          const frames = stackResponse.body.stackFrames
+        if (!isErrorResponse(stackResponse) && stackResponse.data?.stackFrames) {
+          const frames = stackResponse.data.stackFrames
           if (frames.length > 0) {
             stackInfo = `\n\nStack Trace (${frames.length} frames):\n` +
                        frames.slice(0, 5).map((frame: any, index: number) => 

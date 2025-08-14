@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 export class GetStackTraceTool extends BaseTool {
   readonly name = "getStackTrace";
@@ -18,13 +19,13 @@ export class GetStackTraceTool extends BaseTool {
   async execute(): Promise<any> {
     try {
       logger.info("[DebuggerToolkit] Requesting stack trace...")
-      const response = await this.wsBridge.sendDapRequest("stackTrace", { threadId: 1 })
+      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("stackTrace", { threadId: 1 })
 
-      if (response.body.error) {
-        throw new Error(`Error getting stack trace: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error getting stack trace: ${response.error}`)
       }
 
-      const stackFrames = response.body.stackFrames
+      const stackFrames = response.data?.stackFrames
       if (!stackFrames || stackFrames.length === 0) {
         return {
           content: [{ type: "text", text: "The call stack is empty or the execution is not paused." }],

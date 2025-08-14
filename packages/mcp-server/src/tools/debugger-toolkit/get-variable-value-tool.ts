@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type GetVariableValueToolInput = {
   variableName: string
@@ -47,13 +48,13 @@ export class GetVariableValueTool extends BaseTool {
       logger.info(`[DebuggerToolkit] Getting variable '${args.variableName}' value...`)
 
       // First get the scopes for the frame
-      const scopesResponse = await this.wsBridge.sendDapRequest("scopes", { frameId })
+      const scopesResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("scopes", { frameId })
 
-      if (scopesResponse.body.error) {
-        throw new Error(`Error getting scopes: ${scopesResponse.body.error}`)
+      if (isErrorResponse(scopesResponse)) {
+        throw new Error(`Error getting scopes: ${scopesResponse.error}`)
       }
 
-      const scopes = scopesResponse.body.scopes
+      const scopes = scopesResponse.data?.scopes
       if (!scopes || scopes.length === 0) {
         throw new Error("No scopes available for current frame")
       }
@@ -70,15 +71,15 @@ export class GetVariableValueTool extends BaseTool {
       }
 
       // Get variables from the scope
-      const variablesResponse = await this.wsBridge.sendDapRequest("variables", {
+      const variablesResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("variables", {
         variablesReference: targetScope.variablesReference
       })
 
-      if (variablesResponse.body.error) {
-        throw new Error(`Error getting variables: ${variablesResponse.body.error}`)
+      if (isErrorResponse(variablesResponse)) {
+        throw new Error(`Error getting variables: ${variablesResponse.error}`)
       }
 
-      const variables = variablesResponse.body.variables
+      const variables = variablesResponse.data?.variables
       const targetVariable = variables?.find((v: any) => v.name === args.variableName)
 
       if (!targetVariable) {

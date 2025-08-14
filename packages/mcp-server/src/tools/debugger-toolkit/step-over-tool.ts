@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type StepOverToolInput = {
   threadId?: number
@@ -37,13 +38,13 @@ export class StepOverTool extends BaseTool {
       
       logger.info(`[DebuggerToolkit] Stepping over in thread ${threadId} with granularity ${granularity}...`)
       
-      const response = await this.wsBridge.sendDapRequest("next", { 
+      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("next", { 
         threadId,
         granularity 
       })
 
-      if (response.body.error) {
-        throw new Error(`Error stepping over: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error stepping over: ${response.error}`)
       }
 
       return {

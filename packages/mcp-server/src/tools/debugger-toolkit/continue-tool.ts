@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type ContinueToolInput = {
   threadId?: number
@@ -29,13 +30,13 @@ export class ContinueTool extends BaseTool {
       const threadId = args.threadId || 1
       logger.info(`[DebuggerToolkit] Continuing execution for thread ${threadId}...`)
       
-      const response = await this.wsBridge.sendDapRequest("continue", { threadId })
+      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("continue", { threadId })
 
-      if (response.body.error) {
-        throw new Error(`Error continuing execution: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error continuing execution: ${response.error}`)
       }
 
-      const allThreadsContinued = response.body.allThreadsContinued || false
+      const allThreadsContinued = response.data?.allThreadsContinued || false
       const resultText = allThreadsContinued 
         ? "Execution continued for all threads"
         : `Execution continued for thread ${threadId}`

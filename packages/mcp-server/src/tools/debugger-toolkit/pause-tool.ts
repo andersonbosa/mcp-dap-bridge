@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type PauseToolInput = {
   threadId?: number
@@ -29,10 +30,10 @@ export class PauseTool extends BaseTool {
       const threadId = args.threadId || 1
       logger.info(`[DebuggerToolkit] Pausing execution for thread ${threadId}...`)
       
-      const response = await this.wsBridge.sendDapRequest("pause", { threadId })
+      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("pause", { threadId })
 
-      if (response.body.error) {
-        throw new Error(`Error pausing execution: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error pausing execution: ${response.error}`)
       }
 
       return {

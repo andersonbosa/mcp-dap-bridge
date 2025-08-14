@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 export class ListThreadsTool extends BaseTool {
   readonly name = "listThreads"
@@ -19,13 +20,13 @@ export class ListThreadsTool extends BaseTool {
     try {
       logger.info(`[DebuggerToolkit] Listing active threads...`)
 
-      const response = await this.wsBridge.sendDapRequest("threads", {})
+      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("threads", {})
 
-      if (response.body.error) {
-        throw new Error(`Error listing threads: ${response.body.error}`)
+      if (isErrorResponse(response)) {
+        throw new Error(`Error listing threads: ${response.error}`)
       }
 
-      const threads = response.body.threads
+      const threads = response.data?.threads
       if (!threads || threads.length === 0) {
         return {
           content: [{ type: "text", text: "No active threads found in debug session" }],

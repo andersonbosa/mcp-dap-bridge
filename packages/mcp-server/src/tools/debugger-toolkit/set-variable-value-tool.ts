@@ -1,6 +1,7 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
 import { WebSocketBridge } from "../../server/dependencies/websocket-bridge"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 
 type SetVariableValueToolInput = {
   variableName: string
@@ -52,13 +53,13 @@ export class SetVariableValueTool extends BaseTool {
       logger.info(`[DebuggerToolkit] Setting variable '${args.variableName}' to '${args.newValue}'...`)
 
       // First get the scopes for the frame
-      const scopesResponse = await this.wsBridge.sendDapRequest("scopes", { frameId })
+      const scopesResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("scopes", { frameId })
       
-      if (scopesResponse.body.error) {
-        throw new Error(`Error getting scopes: ${scopesResponse.body.error}`)
+      if (isErrorResponse(scopesResponse)) {
+        throw new Error(`Error getting scopes: ${scopesResponse.error}`)
       }
 
-      const scopes = scopesResponse.body.scopes
+      const scopes = scopesResponse.data?.scopes
       if (!scopes || scopes.length === 0) {
         throw new Error("No scopes available for current frame")
       }
@@ -75,15 +76,15 @@ export class SetVariableValueTool extends BaseTool {
       }
 
       // Get variables from the scope to find the target variable
-      const variablesResponse = await this.wsBridge.sendDapRequest("variables", {
+      const variablesResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("variables", {
         variablesReference: targetScope.variablesReference
       })
 
-      if (variablesResponse.body.error) {
-        throw new Error(`Error getting variables: ${variablesResponse.body.error}`)
+      if (isErrorResponse(variablesResponse)) {
+        throw new Error(`Error getting variables: ${variablesResponse.error}`)
       }
 
-      const variables = variablesResponse.body.variables
+      const variables = variablesResponse.data?.variables
       const targetVariable = variables?.find((v: any) => v.name === args.variableName)
 
       if (!targetVariable) {
@@ -96,17 +97,17 @@ export class SetVariableValueTool extends BaseTool {
       }
 
       // Set the variable value
-      const setVariableResponse = await this.wsBridge.sendDapRequest("setVariable", {
+      const setVariableResponse: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("setVariable", {
         variablesReference: targetScope.variablesReference,
         name: args.variableName,
         value: args.newValue
       })
 
-      if (setVariableResponse.body.error) {
-        throw new Error(`Error setting variable: ${setVariableResponse.body.error}`)
+      if (isErrorResponse(setVariableResponse)) {
+        throw new Error(`Error setting variable: ${setVariableResponse.error}`)
       }
 
-      const result = setVariableResponse.body
+      const result = setVariableResponse.data
       const oldValue = targetVariable.value
       const newValue = result.value || args.newValue
 
