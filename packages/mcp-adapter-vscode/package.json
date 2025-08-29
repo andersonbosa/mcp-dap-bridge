@@ -22,8 +22,9 @@
   "contributes": {
     "commands": [
       {
-        "command": "mcp-vscode-adapter.helloWorld",
-        "title": "MCP Adapter: Hello World"
+        "command": "mcpVscodeAdapter.helloWorld",
+        "title": "Hello World",
+        "category": "MCP Adapter"
       }
     ],
     "configuration": {

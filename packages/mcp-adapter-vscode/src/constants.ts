@@ -1,5 +1,5 @@
 
-export const EXT_KEYID = 'mcpDapBridge'
+export const EXT_KEYID = 'mcpVscodeAdapter'
 
 function withPrefix(cmdKey: string) {
     return `${EXT_KEYID}.${cmdKey}`
