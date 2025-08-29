@@ -1,31 +1,63 @@
 import * as vscode from 'vscode'
 import { IdeCommandHandler } from "../../../types"
+import { logger } from '../../../utils/logger'
+
+type VSCodeLocationsByFile = { [uri: string]: vscode.Location[] }
+
+type SetBreakpointsHandlerInput = {
+  locations: { file: string; line: number }[]
+}
+
+type SetBreakpointsHandlerOutput = {
+  totalSet: number
+  fileCount: number
+}
 
 /**
  * Handles the 'breakpoints/set' command by adding breakpoints at the specified locations.
  */
 export class SetBreakpointsHandler implements IdeCommandHandler {
-  async execute(args: { locations: { file: string; line: number }[] }): Promise<any> {
-    const { locations } = args
+  async execute(input: SetBreakpointsHandlerInput): Promise<SetBreakpointsHandlerOutput> {
+    const { locations } = input
     if (!locations || locations.length === 0) {
       throw new Error("At least one location must be provided to set breakpoints.")
     }
 
-    // Group breakpoints by file
-    const locationsByFile = locations.reduce((acc, loc) => {
-      if (!acc[loc.file]) {
-        acc[loc.file] = []
-      }
-      acc[loc.file].push(new vscode.Location(vscode.Uri.file(loc.file), new vscode.Position(loc.line - 1, 0)))
-      return acc
-    }, {} as { [file: string]: vscode.Location[] })
+    const locationsByFile = await this._groupLocationsByFile(locations)
+    logger.info(JSON.stringify(locationsByFile, null, 2))
+    const { totalSet, fileCount } = this._addBreakpointsToVSCode(locationsByFile)
 
+    return { totalSet, fileCount }
+  }
+
+  private async _groupLocationsByFile(locations: { file: string; line: number }[]): Promise<VSCodeLocationsByFile> {
+    const locationsByFile: VSCodeLocationsByFile = {}
+
+    for (const loc of locations) {
+      const uris = await vscode.workspace.findFiles(`**/${loc.file}`, undefined, 1)
+      if (uris.length < 1) {
+        logger.warn(`[${this.constructor.name}] File not found: ${loc.file}`)
+        continue
+      }
+
+      const fileUri = uris[0]
+      const uriString = fileUri.toString()
+      if (!locationsByFile[uriString]) {
+        locationsByFile[uriString] = []
+      }
+      locationsByFile[uriString].push(
+        new vscode.Location(fileUri, new vscode.Position(loc.line - 1, 0))
+      )
+    }
+    return locationsByFile
+  }
+
+  private _addBreakpointsToVSCode(locationsByFile: VSCodeLocationsByFile): { totalSet: number; fileCount: number } {
     let totalSet = 0
     const fileCount = Object.keys(locationsByFile).length
 
-    // Add breakpoints for each file
-    for (const file in locationsByFile) {
-      const fileLocations = locationsByFile[file]
+    for (const uriString in locationsByFile) {
+      const fileLocations = locationsByFile[uriString]
       const newBreakpoints = fileLocations.map(loc => new vscode.SourceBreakpoint(loc))
       vscode.debug.addBreakpoints(newBreakpoints)
       totalSet += newBreakpoints.length

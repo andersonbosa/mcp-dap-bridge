@@ -60,7 +60,7 @@ export class WebSocketManager {
     })
   }
 
-  public sendIdeCommand(command: string, args: any): Promise<any> {
+  public sendIDECommand(command: string, args: any): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!this.isExtensionConnected()) {
         return reject(new Error("VS Code extension is not connected."))

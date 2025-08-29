@@ -47,7 +47,7 @@ export class RemoveBreakpointsTool extends BaseTool {
       }
 
       logger.info(`[IdeToolkit] Requesting to remove breakpoints...`, args)
-      const response = await this.wsBridge.sendIdeCommand("breakpoints/remove", args)
+      const response = await this.wsBridge.sendIDECommand("breakpoints/remove", args)
 
       if (!response.success) {
         throw new Error(`Error removing breakpoints: ${response.error}`)

@@ -22,7 +22,7 @@ export class ListBreakpointsTool extends BaseTool {
     try {
       logger.info(`[IdeToolkit] Listing active breakpoints...`)
 
-      const response = await this.wsBridge.sendIdeCommand("breakpoints/list", {})
+      const response = await this.wsBridge.sendIDECommand("breakpoints/list", {})
 
       if (!response.success) {
         throw new Error(`Error listing breakpoints: ${response.error}`)

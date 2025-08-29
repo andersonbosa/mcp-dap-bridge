@@ -44,7 +44,7 @@ export class SetBreakpointsTool extends BaseTool {
       }
 
       logger.info("[IdeToolkit] Requesting to set breakpoints...")
-      const response = await this.wsBridge.sendIdeCommand('breakpoints/set', { locations: args.locations })
+      const response = await this.wsBridge.sendIDECommand('breakpoints/set', { locations: args.locations })
 
       if (!response.success) {
         throw new Error(`Error setting breakpoints: ${response.error}`)
