@@ -1,12 +1,16 @@
 import * as vscode from 'vscode'
 import { IdeCommandHandler } from "../../../types"
 
+type ListBreakpointsHandlerOutput = {
+  breakpointsByFile: { [key: string]: { line: number; verified: boolean }[] }
+}
+
 /**
  * Handles the 'breakpoints/list' command by retrieving all active breakpoints
  * from the VS Code debug session.
  */
-export class ListBreakpointsHandler implements IdeCommandHandler {
-  async execute(): Promise<any> {
+export class ListBreakpointsHandler implements IdeCommandHandler<void, ListBreakpointsHandlerOutput> {
+  async execute(): Promise<ListBreakpointsHandlerOutput> {
     const breakpoints = vscode.debug.breakpoints
     const breakpointsByFile: { [key: string]: { line: number; verified: boolean }[] } = {}
 

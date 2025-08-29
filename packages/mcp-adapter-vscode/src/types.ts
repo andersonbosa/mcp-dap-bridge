@@ -27,6 +27,6 @@ export interface DapResponseMessage {
 /**
  * Interface for a handler that executes a specific IDE command.
  */
-export interface IdeCommandHandler {
-  execute(args: any): Promise<any>
+export interface IdeCommandHandler<Input, Output> {
+  execute(args: Input): Promise<Output>
 }

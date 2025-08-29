@@ -9,7 +9,7 @@ import { IdeCommandHandler } from '../../types'
  * Manages and routes IDE commands to their respective handlers.
  */
 export class IdeCommandManager {
-  private handlers: Map<string, IdeCommandHandler> = new Map();
+  private handlers: Map<string, IdeCommandHandler<any, any>> = new Map();
 
   constructor() {
     this.registerHandlers()

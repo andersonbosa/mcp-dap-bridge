@@ -16,7 +16,7 @@ type SetBreakpointsHandlerOutput = {
 /**
  * Handles the 'breakpoints/set' command by adding breakpoints at the specified locations.
  */
-export class SetBreakpointsHandler implements IdeCommandHandler {
+export class SetBreakpointsHandler implements IdeCommandHandler<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> {
   async execute(input: SetBreakpointsHandlerInput): Promise<SetBreakpointsHandlerOutput> {
     const { locations } = input
     if (!locations || locations.length === 0) {
@@ -24,7 +24,6 @@ export class SetBreakpointsHandler implements IdeCommandHandler {
     }
 
     const locationsByFile = await this._groupLocationsByFile(locations)
-    logger.info(JSON.stringify(locationsByFile, null, 2))
     const { totalSet, fileCount } = this._addBreakpointsToVSCode(locationsByFile)
 
     return { totalSet, fileCount }

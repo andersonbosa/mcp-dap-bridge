@@ -1,11 +1,21 @@
 import * as vscode from 'vscode'
 import { IdeCommandHandler } from "../../../types"
 
+type RemoveBreakpointsHandlerInput = {
+  file?: string
+  lines?: number[]
+  removeAll?: boolean
+}
+
+type RemoveBreakpointsHandlerOutput = {
+  removedCount: number
+}
+
 /**
  * Handles the 'breakpoints/remove' command by removing specified breakpoints.
  */
-export class RemoveBreakpointsHandler implements IdeCommandHandler {
-  async execute(args: { file?: string; lines?: number[]; removeAll?: boolean }): Promise<any> {
+export class RemoveBreakpointsHandler implements IdeCommandHandler<RemoveBreakpointsHandlerInput, RemoveBreakpointsHandlerOutput> {
+  async execute(args: RemoveBreakpointsHandlerInput): Promise<RemoveBreakpointsHandlerOutput> {
     if (args.removeAll) {
       const allBreakpoints = vscode.debug.breakpoints
       vscode.debug.removeBreakpoints(allBreakpoints)
