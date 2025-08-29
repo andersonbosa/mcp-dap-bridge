@@ -31,7 +31,7 @@ export class MCPServer implements MCPServerTransport {
       }
     )
 
-    this.wsBridge = new WebSocketManager(config.WS_PORT)
+    this.wsBridge = new WebSocketManager(config.WEBSOCKET_PORT)
     this.toolManager = new ToolManager(this.wsBridge)
     this.resourceManager = new ResourceManager()
     this.setupHandlers()

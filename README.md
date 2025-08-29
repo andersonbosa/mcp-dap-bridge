@@ -165,7 +165,7 @@ The MCP server can be configured through environment variables:
 - `MCP_SERVER_VERSION`: Version of the MCP server (default: package version)
 - `PORT`: HTTP port for MCP server (default: 3001)
 - `LOG_LEVEL`: Logging level (info, debug, error, default: info)
-- `WS_PORT`: WebSocket port for DAP communication (default: 8445)
+- `WEBSOCKET_PORT`: WebSocket port for DAP communication (default: 8445)
 
 ## Technical Details
 

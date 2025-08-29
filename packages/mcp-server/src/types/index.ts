@@ -6,10 +6,9 @@ export interface ServerConfig {
   SERVER_VERSION: string
   SERVER_TRANSPORT: ServerTransport
   SERVER_TOOLS_DISABLED: string[]
-  HTTP_PORT: number
+  SERVER_PORT: number
+  WEBSOCKET_PORT: number
   LOG_LEVEL: string
-  MCP_PORT: number
-  WS_PORT: number
 }
 
 /**

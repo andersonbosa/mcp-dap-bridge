@@ -31,8 +31,8 @@ export class MCPServerWithStreamableHTTP implements MCPServerTransport {
 
     const config = this.getConfig()
     // Bind only to localhost for security as per MCP specification
-    this.httpServer.listen(config.HTTP_PORT, '127.0.0.1', () => {
-      const address = `http://localhost:${config.HTTP_PORT}`
+    this.httpServer.listen(config.SERVER_PORT, '127.0.0.1', () => {
+      const address = `http://localhost:${config.SERVER_PORT}`
       logger.info(
         `MCP Server "${config.SERVER_NAME}" v${config.SERVER_VERSION} running on "${address}" using "Streamable HTTP" transport.`
       )
@@ -51,8 +51,8 @@ export class MCPServerWithStreamableHTTP implements MCPServerTransport {
         'http://127.0.0.1:6274',
         'http://localhost:6277', // MCP Inspector proxy
         'http://127.0.0.1:6277',
-        `http://localhost:${this.getConfig().HTTP_PORT}`,
-        `http://127.0.0.1:${this.getConfig().HTTP_PORT}`
+        `http://localhost:${this.getConfig().SERVER_PORT}`,
+        `http://127.0.0.1:${this.getConfig().SERVER_PORT}`
       ]
 
       if (origin && allowedOrigins.some((allowed) => origin.startsWith(allowed))) {
@@ -254,7 +254,7 @@ export class MCPServerWithStreamableHTTP implements MCPServerTransport {
         delete this.transports[sessionId]
       },
       enableDnsRebindingProtection: true,
-      allowedHosts: ['localhost', '127.0.0.1', `localhost:${config.HTTP_PORT}`, `127.0.0.1:${config.HTTP_PORT}`]
+      allowedHosts: ['localhost', '127.0.0.1', `localhost:${config.SERVER_PORT}`, `127.0.0.1:${config.SERVER_PORT}`]
     })
 
     transport.onclose = () => {

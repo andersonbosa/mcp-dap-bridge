@@ -2,6 +2,17 @@
   "name": "@andersonbosa/mcp-server",
   "version": "1.0.0",
   "description": "MCP Server Boilerplate with Docker support",
+  "keywords": [
+    "mcp",
+    "server",
+    "typescript",
+    "docker"
+  ],
+  "author": "Anderson Bosa",
+  "license": "CC-BY-SA-4.0",
+  "engines": {
+    "node": ">=22"
+  },
   "main": "dist/index.js",
   "scripts": {
     "inspect": "DANGEROUSLY_OMIT_AUTH=true npx @modelcontextprotocol/inspector node dist/index.js",
@@ -24,14 +35,6 @@
     "docker:shell": "docker-compose exec mcp-server sh",
     "docker:clean": "docker-compose down -v && docker image prune -f"
   },
-  "keywords": [
-    "mcp",
-    "server",
-    "typescript",
-    "docker"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
     "@andersonbosa/core-bridge": "file:../core-bridge",
     "@modelcontextprotocol/inspector": "^0.16.2",
@@ -51,8 +54,5 @@
     "jest": "^30.0.5",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2"
-  },
-  "engines": {
-    "node": ">=22"
   }
 }

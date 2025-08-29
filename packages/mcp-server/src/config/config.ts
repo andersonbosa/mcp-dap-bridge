@@ -5,10 +5,9 @@ export const config: ServerConfig = {
   SERVER_VERSION: process.env.MCP_SERVER_VERSION || require('../../package.json').version,
   SERVER_TRANSPORT: (process.env.MCP_SERVER_TRANSPORT as ServerTransport) || 'http',
   SERVER_TOOLS_DISABLED: getDisabledToolsFromEnv(),
-  HTTP_PORT: parseInt(process.env.PORT || '3001', 10),
+  SERVER_PORT: parseInt(process.env.SERVER_PORT || '3001', 10),
+  WEBSOCKET_PORT: parseInt(process.env.WEBSOCKET_PORT || '8445', 10),
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
-  MCP_PORT: parseInt(process.env.MCP_PORT || '8444', 10),
-  WS_PORT: parseInt(process.env.WS_PORT || '8445', 10)
 }
 
 function getDisabledToolsFromEnv(): string[] {
@@ -17,5 +16,6 @@ function getDisabledToolsFromEnv(): string[] {
     return []
   }
 
-  return disabledToolsEnv.split(',').map((toolName) => toolName.toLowerCase().trim()) || []
+  return disabledToolsEnv.split(',')
+    .map((toolName) => toolName.toLowerCase().trim()) || []
 }
