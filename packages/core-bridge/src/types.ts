@@ -1,4 +1,3 @@
-// packages/core-bridge/src/types.ts
 
 /**
  * Standard response format for all CommandHandlers.

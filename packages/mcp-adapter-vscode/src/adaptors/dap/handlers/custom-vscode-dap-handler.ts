@@ -1,15 +1,14 @@
 import * as vscode from 'vscode'
 import { CommandResponseFactory } from '../../../core/command-response-factory'
-import { DapRequestMessage, DefaultCommandResponse, StandardCommandResponse } from '../../../types'
-import { CommandHandler } from './command-handler'
+import { DapCommandHandler, DapRequestMessage, DefaultCommandResponse, StandardCommandResponse } from '../../../types'
 
 /**
  * A handler for DAP commands that require an active debug session.
  */
-export class DefaultCommandHandler implements CommandHandler<DefaultCommandResponse> {
+export class CustomVSCodeDAPHandler implements DapCommandHandler<any, DefaultCommandResponse> {
   constructor(readonly command: string) { }
 
-  async handle(session: vscode.DebugSession | undefined, message: DapRequestMessage): Promise<StandardCommandResponse<DefaultCommandResponse>> {
+  async handle(session: vscode.DebugSession | undefined, message: DapRequestMessage<any>): Promise<StandardCommandResponse<DefaultCommandResponse>> {
     const startTime = Date.now()
 
     if (!session) {

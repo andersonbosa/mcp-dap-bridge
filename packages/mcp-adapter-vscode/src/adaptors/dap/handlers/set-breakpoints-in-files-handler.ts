@@ -1,23 +1,28 @@
 import * as vscode from 'vscode'
 import { CommandResponseFactory } from '../../../core/command-response-factory'
-import { DapRequestMessage, SetBreakpointsInFilesResponse, StandardCommandResponse } from '../../../types'
+import { DapCommandHandler, DapRequestMessage, SetBreakpointsInFilesResponse, StandardCommandResponse } from '../../../types'
 import { logger } from '../../../utils/logger'
-import { CommandHandler } from './command-handler'
+
+type SetBreakpointsInFilesHandlerInput = {
+  locations: { file: string; line: number }[]
+}
+
+type SetBreakpointsInFilesHandlerOutput = SetBreakpointsInFilesResponse
 
 /**
  * A specialized handler for the 'setBreakpoints' command, which requires
  * grouping breakpoints by file before sending them to the debug adapter.
  */
-export class SetBreakpointsInFilesHandler implements CommandHandler<SetBreakpointsInFilesResponse> {
+export class SetBreakpointsInFilesHandler implements DapCommandHandler<SetBreakpointsInFilesHandlerInput, SetBreakpointsInFilesResponse> {
   readonly command = 'setBreakpointsInFiles';
 
-  async handle(session: vscode.DebugSession | undefined, message: DapRequestMessage): Promise<StandardCommandResponse<SetBreakpointsInFilesResponse>> {
+  async handle(session: vscode.DebugSession | undefined, message: DapRequestMessage<SetBreakpointsInFilesHandlerInput>): Promise<StandardCommandResponse<SetBreakpointsInFilesHandlerOutput>> {
     const startTime = Date.now()
 
     if (!session) {
       throw new Error("No active debug session found for setting breakpoints.")
     }
-    const locations = message.args.locations as { file: string; line: number }[]
+    const { locations } = message.args
 
     if (!locations) {
       throw new Error("The 'setBreakpointsInFiles' command requires a 'locations' argument.")

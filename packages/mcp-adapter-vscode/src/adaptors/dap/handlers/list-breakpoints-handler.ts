@@ -1,16 +1,19 @@
 import * as vscode from 'vscode'
 import { CommandResponseFactory } from '../../../core/command-response-factory'
-import { StandardCommandResponse } from '../../../types'
+import { DapCommandHandler, StandardCommandResponse } from '../../../types'
 import { logger } from '../../../utils/logger'
-import { CommandHandler } from './command-handler'
+
+type ListBreakpointsHandlerOutput = {
+  breakpoints: Record<string, any[]>
+}
 
 /**
  * A specialized handler to list all active breakpoints.
  */
-export class ListBreakpointsHandler implements CommandHandler<any> {
+export class ListBreakpointsHandler implements DapCommandHandler<void, ListBreakpointsHandlerOutput> {
   readonly command = 'listBreakpoints';
 
-  async handle(session: vscode.DebugSession | undefined): Promise<StandardCommandResponse<any>> {
+  async handle(session: vscode.DebugSession | undefined): Promise<StandardCommandResponse<ListBreakpointsHandlerOutput>> {
     const startTime = Date.now()
     logger.info(`[${this.constructor.name}] Listing active breakpoints...`)
 
