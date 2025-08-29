@@ -1,7 +1,7 @@
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { ToolResult } from "../../types"
-import { logger } from "../../utils/logger"
+import { logger } from "@andersonbosa/core-bridge"
 import { BaseTool } from "../base-tool"
 
 type GetThreadInfoToolInput = {

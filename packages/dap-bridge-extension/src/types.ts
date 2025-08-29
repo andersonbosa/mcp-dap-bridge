@@ -23,3 +23,10 @@ export interface DapResponseMessage {
   body: any;
 }
 
+
+/**
+ * Interface for a handler that executes a specific IDE command.
+ */
+export interface IdeCommandHandler {
+  execute(args: any): Promise<any>
+}

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid"
 import { WebSocket, WebSocketServer } from "ws"
-import { logger } from "../../utils/logger"
+import { logger } from "@andersonbosa/core-bridge"
 
 /**
  * Manages the WebSocket communication bridge between the MCP server and the IDE extension.

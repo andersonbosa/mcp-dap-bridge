@@ -1,6 +1,6 @@
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { ToolResult } from "../../types"
-import { logger } from "../../utils/logger"
+import { logger } from "@andersonbosa/core-bridge"
 import { BaseTool } from "../base-tool"
 import { withIDE } from "../decorators/with-ide.decorator"
 

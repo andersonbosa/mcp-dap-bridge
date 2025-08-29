@@ -1,6 +1,6 @@
 import { BaseTool } from "../base-tool";
 import { promises as fs } from "fs";
-import { logger } from "../../utils/logger";
+import { logger } from "@andersonbosa/core-bridge";
 
 export class FileReadTool extends BaseTool {
   readonly name = "read_file";

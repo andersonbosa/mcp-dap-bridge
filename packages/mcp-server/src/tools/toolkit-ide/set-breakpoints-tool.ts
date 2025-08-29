@@ -1,8 +1,8 @@
-import { isErrorResponse, SetBreakpointsInFilesResponse, StandardCommandResponse } from "@andersonbosa/core-bridge"
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { ToolResult } from "../../types"
-import { logger } from "../../utils/logger"
+import { logger } from "@andersonbosa/core-bridge"
 import { BaseTool } from "../base-tool"
+import { withIDE } from "../decorators/with-ide.decorator"
 
 export class SetBreakpointsTool extends BaseTool {
   readonly name = "setBreakpoints";
@@ -32,41 +32,32 @@ export class SetBreakpointsTool extends BaseTool {
     required: ["locations"],
   };
 
-  constructor(private readonly wsBridge: WebSocketManager) {
+  constructor(public readonly wsBridge: WebSocketManager) {
     super()
   }
 
+  @withIDE
   async execute(args: { locations: { file: string; line: number }[] }): Promise<ToolResult> {
     try {
       if (!args.locations || args.locations.length === 0) {
         throw new Error("The 'setBreakpoints' action requires at least one location.")
       }
 
-      logger.info("[DebuggerToolkit] Requesting to set breakpoints...")
-      const response: StandardCommandResponse<SetBreakpointsInFilesResponse> = await this.wsBridge.sendDapRequest('setBreakpointsInFiles', { locations: args.locations })
+      logger.info("[IdeToolkit] Requesting to set breakpoints...")
+      const response = await this.wsBridge.sendIdeCommand('breakpoints/set', { locations: args.locations })
 
-      if (isErrorResponse(response)) {
+      if (!response.success) {
         throw new Error(`Error setting breakpoints: ${response.error}`)
       }
 
-      const results = response.data?.results
-      if (!results) {
-        throw new Error("Invalid response from the extension when setting breakpoints.")
-      }
-
-      const totalSet = results.reduce((sum: number, result: any) => {
-        return sum + (result?.breakpoints?.length || 0)
-      }, 0)
-
-      const fileCount = results.length
-
+      const { totalSet, fileCount } = response.data;
       const resultText = `Success! ${totalSet} of ${args.locations.length} breakpoints were set across ${fileCount} file(s).`
 
       return {
         content: [{ type: "text", text: resultText }],
       }
     } catch (error: any) {
-      logger.error(`[DebuggerToolkit] Error executing setBreakpoints:`, error)
+      logger.error(`[IdeToolkit] Error executing setBreakpoints:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
         isError: true,

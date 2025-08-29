@@ -1,5 +1,5 @@
 import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
+import { logger } from "@andersonbosa/core-bridge"
 import { ToolResult } from "../../types"
 import { StandardCommandResponse, IsDebuggerActiveResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 import { withIDE } from "../decorators/with-ide.decorator"

@@ -1,6 +1,6 @@
 import { Resource } from "@modelcontextprotocol/sdk/types.js"
 
-import { logger } from "../../utils/logger"
+import { logger } from "@andersonbosa/core-bridge"
 import { BaseResource } from "../../resources/base-resource"
 import { FileResource } from "../../resources/file-resource"
 
