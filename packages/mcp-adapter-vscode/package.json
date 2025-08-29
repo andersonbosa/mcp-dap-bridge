@@ -1,12 +1,12 @@
 {
-  "name": "mcp-dap-bridge",
-  "displayName": "MCP DAP Bridge Extension",
-  "description": "description of my extension",
+  "name": "@mcp-adapter-vscode/dap-bridge-extension",
+  "displayName": "MCP Adapter for VSCode",
+  "description": "MCP Adapter for VSCode",
   "version": "0.0.1",
   "publisher": "andersonbosa",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andersonbosa/mcp-dap-bridge.git"
+    "url": "https://github.com/andersonbosa/mcp-debug-bridge.git"
   },
   "categories": [
     "AI",
@@ -22,14 +22,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "mcpDapBridge.helloWorld",
-        "title": "DAP Bridge: Hello World"
+        "command": "mcp-vscode-adapter.helloWorld",
+        "title": "MCP Adapter: Hello World"
       }
     ],
     "configuration": {
-      "title": "MCP DAP Bridge",
+      "title": "MCP Adapter for VSCode",
       "properties": {
-        "mcpDapBridge.wsServerUrl": {
+        "mcpAdapterForVSCode.wsServerUrl": {
           "type": "string",
           "default": "ws://localhost:8445",
           "description": "WebSocket URL for the MCP Server connection"

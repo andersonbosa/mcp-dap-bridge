@@ -1,8 +1,8 @@
-import { logger } from '@andersonbosa/core-bridge'
-import { ListBreakpointsHandler } from './command-handlers/list-breakpoints-handler'
-import { RemoveBreakpointsHandler } from './command-handlers/remove-breakpoints-handler'
-import { SetBreakpointsHandler } from './command-handlers/set-breakpoints-handler'
-import { IdeCommandHandler } from './types'
+import { logger } from '../../utils/logger'
+import { ListBreakpointsHandler } from './handlers/list-breakpoints-handler'
+import { RemoveBreakpointsHandler } from './handlers/remove-breakpoints-handler'
+import { SetBreakpointsHandler } from './handlers/set-breakpoints-handler'
+import { IdeCommandHandler } from '../../types'
 
 
 /**

@@ -1,4 +1,5 @@
 import express from 'express'
+import { createTodoController } from './controllers/create-todo.mjs'
 
 const app = express()
 const port = 3000
@@ -6,25 +7,18 @@ const port = 3000
 app.use(express.json())
 
 // In-memory storage for todos
-let todos = [
+export let todos = [
     {
         "id": 0,
         "title": "bd6eaa8a-ec6c-496f-a143-34723217a878",
         "completed": true
     }
 ]
+
 let nextId = 1
 
 // Create a new todo
-app.post('/todos', (req, res) => {
-    const { title, completed = false } = req.body
-    if (!title) {
-        return res.status(400).json({ error: 'Title is required' })
-    }
-    const todo = { id: nextId++, title, completed }
-    todos.push(todo)
-    res.status(201).json(todo)
-})
+app.post('/todos', createTodoController)
 
 // Get all todos
 app.get('/todos', (req, res) => {

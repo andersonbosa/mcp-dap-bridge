@@ -1,4 +1,4 @@
-import { StandardCommandResponse } from './types'
+import { StandardCommandResponse } from '../types'
 
 /**
  * Factory class for creating standardized CommandHandler responses.

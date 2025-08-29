@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { IdeCommandHandler } from "../types"
+import { IdeCommandHandler } from "../../../types"
 
 /**
  * Handles the 'breakpoints/list' command by retrieving all active breakpoints
