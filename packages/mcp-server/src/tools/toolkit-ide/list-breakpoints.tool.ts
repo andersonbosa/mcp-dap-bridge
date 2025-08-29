@@ -1,13 +1,12 @@
-import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { ToolResult } from "../../types"
 import { logger } from "../../utils/logger"
 import { BaseTool } from "../base-tool"
-import { withDAPSession } from "../decorators/with-dap-session.decorator"
+import { withIDE } from "../decorators/with-ide.decorator"
 
 export class ListBreakpointsTool extends BaseTool {
   readonly name = "listBreakpoints"
-  readonly description = "List all active breakpoints in the debug session"
+  readonly description = "List all active breakpoints in the IDE"
   readonly inputSchema = {
     type: "object",
     properties: {},
@@ -18,25 +17,23 @@ export class ListBreakpointsTool extends BaseTool {
     super()
   }
 
-  @withDAPSession
+  @withIDE
   async execute(): Promise<ToolResult> {
     try {
-      logger.info(`[DebuggerToolkit] Listing active breakpoints...`)
+      logger.info(`[IdeToolkit] Listing active breakpoints...`)
 
-      const response: StandardCommandResponse<any> = await this.wsBridge.sendDapRequest("listBreakpoints", {})
+      const response = await this.wsBridge.sendIdeCommand("breakpoints/list", {})
 
-      if (isErrorResponse(response)) {
+      if (!response.success) {
         throw new Error(`Error listing breakpoints: ${response.error}`)
       }
 
-      const breakpointsByFile = response.data?.breakpoints
+      const breakpointsByFile = response.data?.breakpointsByFile
       if (!breakpointsByFile || Object.keys(breakpointsByFile).length === 0) {
         return {
-          content: [{ type: "text", text: "No active breakpoints found in debug session" }],
+          content: [{ type: "text", text: "No active breakpoints found." }],
         }
       }
-
-      console.log('breakpointsByFile', breakpointsByFile)
 
       let totalBreakpoints = 0
       const formattedBreakpoints = Object.entries(breakpointsByFile)
@@ -54,7 +51,7 @@ export class ListBreakpointsTool extends BaseTool {
         content: [{ type: "text", text: resultText }],
       }
     } catch (error: any) {
-      logger.error(`[DebuggerToolkit] Error executing listBreakpoints:`, error)
+      logger.error(`[IdeToolkit] Error executing listBreakpoints:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
         isError: true,

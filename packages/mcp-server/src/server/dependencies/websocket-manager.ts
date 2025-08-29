@@ -13,6 +13,7 @@ export class WebSocketManager {
   private wsServer: WebSocketServer
   private extensionSocket: WebSocket | null = null;
   private pendingDapRequests = new Map<string, (response: any) => void>();
+  private pendingIdeRequests = new Map<string, (response: any) => void>();
 
   constructor(private port: number) {
     this.wsServer = new WebSocketServer({ port })
@@ -59,6 +60,34 @@ export class WebSocketManager {
     })
   }
 
+  public sendIdeCommand(command: string, args: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.isExtensionConnected()) {
+        return reject(new Error("VS Code extension is not connected."))
+      }
+
+      const request_id = uuidv4()
+      const payload = {
+        type: "ide_command",
+        request_id,
+        command,
+        args,
+      }
+
+      this.pendingIdeRequests.set(request_id, resolve)
+
+      setTimeout(() => {
+        if (this.pendingIdeRequests.has(request_id)) {
+          this.pendingIdeRequests.delete(request_id)
+          reject(new Error(`Timeout: No response for IDE command ${command} in 5 seconds.`))
+        }
+      }, 5000)
+
+      logger.info(`[WebSocket] Sending IDE command to extension: ${command}`)
+      this.extensionSocket!.send(JSON.stringify(payload))
+    })
+  }
+
   private setupConnections(): void {
     this.wsServer.on("connection", (ws) => {
       const connectionId = uuidv4()
@@ -90,6 +119,15 @@ export class WebSocketManager {
       if (resolve) {
         resolve(message.body)
         this.pendingDapRequests.delete(message.request_id)
+      }
+    } else if (
+      message.type === "ide_response" &&
+      this.pendingIdeRequests.has(message.request_id)
+    ) {
+      const resolve = this.pendingIdeRequests.get(message.request_id)
+      if (resolve) {
+        resolve(message.body)
+        this.pendingIdeRequests.delete(message.request_id)
       }
     }
   }

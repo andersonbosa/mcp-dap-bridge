@@ -1,17 +1,19 @@
 import * as vscode from 'vscode'
 import WebSocket from 'ws'
 import { CommandManager } from './command-handler'
+import { IdeCommandManager } from './ide-command-handler' // Import the new manager
 import { COMMANDS_MAP, EXT_KEYID } from './constants'
-import { DapRequestMessage, DapResponseMessage } from './types'
+import { DapRequestMessage, DapResponseMessage, IdeRequestMessage } from './types'
 
 let mcpSocket: WebSocket | null = null
-const commandManager = new CommandManager()
+const dapCommandManager = new CommandManager()
+const ideCommandManager = new IdeCommandManager() // Instantiate the new manager
 
 function getWebSocketServerUrl(): string {
   return vscode.workspace.getConfiguration('mcpDapBridge').get('wsServerUrl') || 'ws://localhost:8445'
 }
 
-function sendMessageToServer(message: DapResponseMessage) {
+function sendMessageToServer(message: any) { // More generic type
   if (mcpSocket && mcpSocket.readyState === WebSocket.OPEN) {
     mcpSocket.send(JSON.stringify(message))
   } else {
@@ -23,7 +25,7 @@ async function handleDapRequest(message: DapRequestMessage) {
   const session = vscode.debug.activeDebugSession
 
   try {
-    const handler = commandManager.getHandler(message.command)
+    const handler = dapCommandManager.getHandler(message.command)
     // Pass the session (even if undefined) to the handler.
     // The handler is responsible for checking if an active session is required.
     const responseBody = await handler.handle(session, message)
@@ -39,20 +41,41 @@ async function handleDapRequest(message: DapRequestMessage) {
     sendMessageToServer({
       type: 'dap_response',
       request_id: message.request_id,
-      body: { error: error.message }
+      body: { success: false, error: error.message }
     })
+  }
+}
+
+async function handleIdeCommand(message: IdeRequestMessage) {
+  try {
+    const responseData = await ideCommandManager.handle(message.command, message.args);
+    sendMessageToServer({
+      type: 'ide_response',
+      request_id: message.request_id,
+      body: { success: true, data: responseData },
+    });
+  } catch (error: any) {
+    console.error(`[Extension] Error executing IDE command '${message.command}':`, error);
+    sendMessageToServer({
+      type: 'ide_response',
+      request_id: message.request_id,
+      body: { success: false, error: error.message },
+    });
   }
 }
 
 
 async function handleServerMessage(data: Buffer) {
   try {
-    const message: DapRequestMessage = JSON.parse(data.toString())
+    const message: any = JSON.parse(data.toString()) // More generic type
     console.debug('[Extension] Command received from server:', message)
 
     switch (message.type) {
       case 'dap_request':
         await handleDapRequest(message)
+        break
+      case 'ide_command':
+        await handleIdeCommand(message)
         break
       default:
         console.warn(`[Extension] Received unknown message type: ${message.type}`)
