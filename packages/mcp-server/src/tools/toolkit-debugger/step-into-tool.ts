@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { ToolResult } from "../../types"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 type StepIntoToolInput = {
   threadId?: number
@@ -36,7 +37,7 @@ export class StepIntoTool extends BaseTool {
     super()
   }
 
-  async execute(args: StepIntoToolInput): Promise<any> {
+  async execute(args: StepIntoToolInput): Promise<ToolResult> {
     try {
       const threadId = args.threadId || 1
       const granularity = args.granularity || "line"
@@ -62,6 +63,7 @@ export class StepIntoTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing stepInto:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }

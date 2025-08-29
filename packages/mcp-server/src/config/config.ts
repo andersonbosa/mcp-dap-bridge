@@ -7,7 +7,7 @@ export const config: ServerConfig = {
   SERVER_TOOLS_DISABLED: getDisabledToolsFromEnv(),
   SERVER_PORT: parseInt(process.env.SERVER_PORT || '3001', 10),
   WEBSOCKET_PORT: parseInt(process.env.WEBSOCKET_PORT || '8445', 10),
-  LOG_LEVEL: process.env.LOG_LEVEL || 'info',
+  LOG_LEVEL: process.env.LOG_LEVEL || 'info'
 }
 
 function getDisabledToolsFromEnv(): string[] {
@@ -16,6 +16,5 @@ function getDisabledToolsFromEnv(): string[] {
     return []
   }
 
-  return disabledToolsEnv.split(',')
-    .map((toolName) => toolName.toLowerCase().trim()) || []
+  return disabledToolsEnv.split(',').map((toolName) => toolName.toLowerCase().trim()) || []
 }

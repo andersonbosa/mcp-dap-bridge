@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { ToolResult } from "../../types"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 type PauseToolInput = {
   threadId?: number
@@ -25,7 +26,7 @@ export class PauseTool extends BaseTool {
     super()
   }
 
-  async execute(args: PauseToolInput): Promise<any> {
+  async execute(args: PauseToolInput): Promise<ToolResult> {
     try {
       const threadId = args.threadId || 1
       logger.info(`[DebuggerToolkit] Pausing execution for thread ${threadId}...`)
@@ -43,6 +44,7 @@ export class PauseTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing pause:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }

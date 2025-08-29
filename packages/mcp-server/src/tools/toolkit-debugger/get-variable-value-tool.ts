@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { ToolResult } from "../../types"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 type GetVariableValueToolInput = {
   variableName: string
@@ -41,7 +42,7 @@ export class GetVariableValueTool extends BaseTool {
     super()
   }
 
-  async execute(args: GetVariableValueToolInput): Promise<any> {
+  async execute(args: GetVariableValueToolInput): Promise<ToolResult> {
     try {
       const frameId = args.frameId || 0
 
@@ -103,6 +104,7 @@ export class GetVariableValueTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing getVariableValue:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }

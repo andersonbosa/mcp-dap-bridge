@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { ToolResult } from "../../types"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 type StepOverToolInput = {
   threadId?: number
@@ -31,7 +32,7 @@ export class StepOverTool extends BaseTool {
     super()
   }
 
-  async execute(args: StepOverToolInput): Promise<any> {
+  async execute(args: StepOverToolInput): Promise<ToolResult> {
     try {
       const threadId = args.threadId || 1
       const granularity = args.granularity || "line"
@@ -54,6 +55,7 @@ export class StepOverTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing stepOver:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }

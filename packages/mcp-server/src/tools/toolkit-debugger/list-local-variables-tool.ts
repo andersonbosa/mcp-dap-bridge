@@ -1,5 +1,6 @@
 import { BaseTool } from "../base-tool"
 import { logger } from "../../utils/logger"
+import { ToolResult } from "../../types";
 
 export class ListLocalVariablesTool extends BaseTool {
   readonly name = "listLocalVariables";
@@ -19,7 +20,7 @@ export class ListLocalVariablesTool extends BaseTool {
    * This implementation assumes that the WebSocketManager is available as this.wsBridge,
    * and that the debug adapter protocol is being used.
    */
-  async execute(): Promise<any> {
+  async execute(): Promise<ToolResult> {
     try {
       logger.info("[DebuggerToolkit] Listing local variables in the current stack frame...");
 
@@ -103,6 +104,7 @@ export class ListLocalVariablesTool extends BaseTool {
       logger.error("[DebuggerToolkit] Error executing listLocalVariables:", error);
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       };
     }
   }

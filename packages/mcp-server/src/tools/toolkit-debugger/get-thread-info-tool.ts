@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { ToolResult } from "../../types"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 type GetThreadInfoToolInput = {
   threadId: number
@@ -25,7 +26,7 @@ export class GetThreadInfoTool extends BaseTool {
     super()
   }
 
-  async execute(args: GetThreadInfoToolInput): Promise<any> {
+  async execute(args: GetThreadInfoToolInput): Promise<ToolResult> {
     try {
       logger.info(`[DebuggerToolkit] Getting information for thread ${args.threadId}...`)
       
@@ -88,6 +89,7 @@ export class GetThreadInfoTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing getThreadInfo:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }

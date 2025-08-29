@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { ToolResult } from "../../types"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 export class ListThreadsTool extends BaseTool {
   readonly name = "listThreads"
@@ -16,7 +17,7 @@ export class ListThreadsTool extends BaseTool {
     super()
   }
 
-  async execute(): Promise<any> {
+  async execute(): Promise<ToolResult> {
     try {
       logger.info(`[DebuggerToolkit] Listing active threads...`)
 
@@ -47,6 +48,7 @@ export class ListThreadsTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing listThreads:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }

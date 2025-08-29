@@ -1,7 +1,8 @@
-import { BaseTool } from "../base-tool"
-import { logger } from "../../utils/logger"
-import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/core-bridge"
+import { ToolResult } from "../../types"
+import { WebSocketManager } from "../../server/dependencies/websocket-manager"
+import { logger } from "../../utils/logger"
+import { BaseTool } from "../base-tool"
 
 type StepOutToolInput = {
   threadId?: number
@@ -31,7 +32,7 @@ export class StepOutTool extends BaseTool {
     super()
   }
 
-  async execute(args: StepOutToolInput): Promise<any> {
+  async execute(args: StepOutToolInput): Promise<ToolResult> {
     try {
       const threadId = args.threadId || 1
       const granularity = args.granularity || "line"
@@ -54,6 +55,7 @@ export class StepOutTool extends BaseTool {
       logger.error(`[DebuggerToolkit] Error executing stepOut:`, error)
       return {
         content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true,
       }
     }
   }
