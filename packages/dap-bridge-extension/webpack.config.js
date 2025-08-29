@@ -1,9 +1,9 @@
 //@ts-check
 
-'use strict';
+'use strict'
 
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
+const path = require('path')
+const nodeExternals = require('webpack-node-externals')
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -48,5 +48,5 @@ const extensionConfig = {
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
   },
-};
-module.exports = [extensionConfig];
+}
+module.exports = [extensionConfig]

@@ -125,6 +125,38 @@ class IsDebuggerActiveHandler implements CommandHandler<IsDebuggerActiveResponse
   }
 }
 
+/**
+ * A specialized handler to list all active breakpoints.
+ */
+class ListBreakpointsHandler implements CommandHandler<any> {
+  readonly command = 'listBreakpoints';
+
+  async handle(session: vscode.DebugSession | undefined): Promise<StandardCommandResponse<any>> {
+    const startTime = Date.now()
+    console.log(`[CommandHandler][${this.command}] Listing active breakpoints...`)
+
+    const allBreakpoints = vscode.debug.breakpoints
+    const breakpointsByFile = allBreakpoints.reduce((acc, bp) => {
+      if (bp instanceof vscode.SourceBreakpoint) {
+        const filePath = bp.location.uri.fsPath
+        if (!acc[filePath]) {
+          acc[filePath] = []
+        }
+        acc[filePath].push({
+          line: bp.location.range.start.line + 1,
+          enabled: bp.enabled,
+          condition: bp.condition,
+          hitCondition: bp.hitCondition,
+          logMessage: bp.logMessage,
+        })
+      }
+      return acc
+    }, {} as Record<string, any[]>)
+
+    return CommandResponseFactory.createWithoutDebugSession({ breakpoints: breakpointsByFile }, startTime, session?.id)
+  }
+}
+
 
 /**
  * Manages and dispatches DAP command handlers.
@@ -135,6 +167,7 @@ export class CommandManager {
   constructor() {
     this.register(new SetBreakpointsInFilesHandler())
     this.register(new IsDebuggerActiveHandler())
+    this.register(new ListBreakpointsHandler())
   }
 
   /**

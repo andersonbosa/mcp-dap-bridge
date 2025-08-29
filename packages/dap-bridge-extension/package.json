@@ -1,38 +1,46 @@
 {
-  "name": "@andersonbosa/mcp-dap-bridge-extension",
+  "name": "mcp-dap-bridge",
   "displayName": "MCP DAP Bridge Extension",
   "description": "description of my extension",
   "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.102.0"
+  "publisher": "andersonbosa",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andersonbosa/mcp-dap-bridge.git"
   },
   "categories": [
+    "AI",
+    "Debuggers",
     "Other"
   ],
+  "engines": {
+    "vscode": "^1.103.0"
+  },
   "activationEvents": [
     "*"
   ],
-  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "mcp-dap-bridge.helloWorld",
-        "title": "Hello World"
+        "command": "mcpDapBridge.helloWorld",
+        "title": "DAP Bridge: Hello World"
       }
     ],
     "configuration": {
       "title": "MCP DAP Bridge",
       "properties": {
-        "mcpDapBridge.ipcServerUrl": {
+        "mcpDapBridge.wsServerUrl": {
           "type": "string",
           "default": "ws://localhost:8445",
-          "description": "WebSocket URL for the MCP Server IPC connection"
+          "description": "WebSocket URL for the MCP Server connection"
         }
       }
     }
   },
+  "main": "./dist/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run package",
+    "vsix": "vsce package --allow-star-activation",
     "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
@@ -45,16 +53,17 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
-    "@types/vscode": "^1.102.0",
+    "@types/vscode": "^1.103.0",
     "@types/ws": "^8.18.1",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.39.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.32.0",
-    "ts-loader": "^9.5.2",
+    "eslint": "^9.34.0",
+    "ts-loader": "^9.5.4",
     "typescript": "^5.9.2",
-    "webpack": "^5.101.0",
+    "vsce": "^2.15.0",
+    "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"
   },
