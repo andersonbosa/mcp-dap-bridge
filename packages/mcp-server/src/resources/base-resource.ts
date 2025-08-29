@@ -1,17 +1,17 @@
-import { Resource } from "@modelcontextprotocol/sdk/types.js";
+import type { Resource } from '@modelcontextprotocol/sdk/types.js'
 
 export abstract class BaseResource {
-  abstract readonly uri: string;
-  abstract readonly name: string;
-  abstract readonly description: string;
+  abstract readonly uri: string
+  abstract readonly name: string
+  abstract readonly description: string
 
-  abstract read(): Promise<any>;
+  abstract read(): Promise<any>
 
   getDefinition(): Resource {
     return {
       uri: this.uri,
       name: this.name,
-      description: this.description,
-    };
+      description: this.description
+    }
   }
 }

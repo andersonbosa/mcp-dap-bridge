@@ -1,10 +1,15 @@
-import { ServerConfig } from "../types"
-import { MCPServer } from "./mcp-server"
-import { MCPServerWithStreamableHTTP } from "./mcp-server-with-streamable-http"
+import type { FactoryPattern, MCPServerTransport, ServerConfig } from '../types'
+import { MCPServer } from './mcp-server'
+import { MCPServerWithStdio } from './mcp-server-with-stdio'
+import { MCPServerWithStreamableHTTP } from './mcp-server-with-streamable-http'
 
-export function mcpServerFactory(config: ServerConfig): MCPServer | MCPServerWithStreamableHTTP {
-  if (config.SERVER_TRANSPORT === "http") {
-    return new MCPServerWithStreamableHTTP(new MCPServer(config))
+export class MCPServerFactory implements FactoryPattern<MCPServerTransport> {
+  constructor(private config: ServerConfig) {}
+
+  create(): MCPServerTransport {
+    if (this.config.SERVER_TRANSPORT === 'http') {
+      return new MCPServerWithStreamableHTTP(new MCPServer(this.config))
+    }
+    return new MCPServerWithStdio(new MCPServer(this.config))
   }
-  return new MCPServer(config)
 }

@@ -1,9 +1,9 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js"
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
-import { ServerConfig } from "../types"
-import { logger } from "../utils/logger"
-import { MCPServer } from "./mcp-server"
-import { MCPServerTransport } from "../types/index"
+import type { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import type { ServerConfig } from '../types'
+import type { MCPServerTransport } from '../types/index'
+import { logger } from '../utils/logger'
+import type { MCPServer } from './mcp-server'
 
 /**
  * Decorator that adds support for the STDIO transport to the MCP Server.

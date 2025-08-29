@@ -1,11 +1,11 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js"
-import { z } from "zod"
-import { ServerConfig } from "../types"
-import { logger } from "../utils/logger"
-import { ResourceManager } from "./dependencies/resource-manager"
-import { ToolManager } from "./dependencies/tool-manager"
-import { WebSocketBridge } from "./dependencies/websocket-bridge"
-import { MCPServerTransport } from "../types/index"
+import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+import { z } from 'zod'
+import type { ServerConfig } from '../types'
+import type { MCPServerTransport } from '../types/index'
+import { logger } from '../utils/logger'
+import { ResourceManager } from './dependencies/resource-manager'
+import { ToolManager } from './dependencies/tool-manager'
+import { WebSocketManager } from './dependencies/websocket-manager'
 
 /**
  * Base class of the MCP Server that manages tools and resources.
@@ -15,23 +15,23 @@ export class MCPServer implements MCPServerTransport {
   private server: Server
   private toolManager: ToolManager
   private resourceManager: ResourceManager
-  private wsBridge: WebSocketBridge
+  private wsBridge: WebSocketManager
 
   constructor(private config: ServerConfig) {
     this.server = new Server(
       {
         name: config.SERVER_NAME,
-        version: config.SERVER_VERSION,
+        version: config.SERVER_VERSION
       },
       {
         capabilities: {
           tools: {},
-          resources: {},
-        },
+          resources: {}
+        }
       }
     )
 
-    this.wsBridge = new WebSocketBridge(config.WS_PORT)
+    this.wsBridge = new WebSocketManager(config.WS_PORT)
     this.toolManager = new ToolManager(this.wsBridge)
     this.resourceManager = new ResourceManager()
     this.setupHandlers()
@@ -39,22 +39,22 @@ export class MCPServer implements MCPServerTransport {
 
   private setupHandlers(): void {
     // List available tools
-    const toolsListSchema = z.object({ method: z.literal("tools/list") })
+    const toolsListSchema = z.object({ method: z.literal('tools/list') })
     const toolsCallSchema = z.object({
-      method: z.literal("tools/call"),
+      method: z.literal('tools/call'),
       params: z.object({
         name: z.string(),
-        arguments: z.any(),
-      }),
+        arguments: z.any()
+      })
     })
     const resourcesListSchema = z.object({
-      method: z.literal("resources/list"),
+      method: z.literal('resources/list')
     })
     const resourcesReadSchema = z.object({
-      method: z.literal("resources/read"),
+      method: z.literal('resources/read'),
       params: z.object({
-        uri: z.string(),
-      }),
+        uri: z.string()
+      })
     })
 
     // Handle tool list
@@ -79,7 +79,7 @@ export class MCPServer implements MCPServerTransport {
       return await this.resourceManager.readResource(uri)
     })
 
-    logger.info("MCP Server handlers configured")
+    logger.info('MCP Server handlers configured')
   }
 
   getConfig(): ServerConfig {
@@ -95,6 +95,6 @@ export class MCPServer implements MCPServerTransport {
    * The decorators must override this method to add their specific transport.
    */
   async start(): Promise<void> {
-    throw new Error("No transport configured. Use a transport decorator.")
+    throw new Error('No transport configured. Use a transport decorator.')
   }
 }

@@ -1,27 +1,18 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js"
 import { BaseTool } from "../../tools/base-tool"
-import { createDebuggerToolkit as debuggerToolkitFactory } from "../../tools/debugger-toolkit/factory"
-import { EchoTool } from "../../tools/echo-tool"
-import { FileReadTool } from "../../tools/file-read-tool"
+import { ToolsFactory } from "../../tools/tools.factory"
 import { logger } from "../../utils/logger"
-import type { WebSocketBridge } from "./websocket-bridge"
+import type { WebSocketManager } from "./websocket-manager"
 
 export class ToolManager {
   private tools: Map<string, BaseTool> = new Map();
 
-  constructor(private websocketBridge: WebSocketBridge) {
+  constructor(private websocketBridge: WebSocketManager) {
     this.registerTools()
   }
 
   private registerTools(): void {
-    const standardTools = [
-      new EchoTool(),
-      new FileReadTool(),
-    ]
-
-    const debuggerToolkit = debuggerToolkitFactory(this.websocketBridge)
-
-    const allTools = [...standardTools, ...debuggerToolkit]
+    const allTools = new ToolsFactory(this.websocketBridge).create()
 
     allTools.forEach((tool) => {
       this.tools.set(tool.name, tool)

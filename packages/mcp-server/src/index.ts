@@ -1,10 +1,10 @@
 import { config } from "./config/config"
-import { mcpServerFactory } from "./server/mcp-server-factory"
+import { MCPServerFactory } from "./server/mcp-server-factory"
 import { logger } from "./utils/logger"
 
 async function main() {
   try {
-    const server = mcpServerFactory(config)
+    const server = new MCPServerFactory(config).create()
     await server.start()
     logger.info("MCP Server started successfully")
   } catch (error) {
