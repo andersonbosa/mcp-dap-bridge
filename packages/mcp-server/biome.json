@@ -32,7 +32,8 @@
     "enabled": true,
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": "on",
+        "sortImports": "on"
       }
     }
   }
