@@ -1,12 +1,12 @@
 {
-  "name": "@andersonbosa/mcp-debug-ex-server",
+  "name": "@andersonbosa/mcp-debugx-server",
   "version": "1.0.0",
   "description": "MCP DebugX Server",
   "author": "Anderson Bosa",
   "license": "CC-BY-SA-4.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andersonbosa/mcp-debug-ex.git"
+    "url": "https://github.com/andersonbosa/mcp-debugx.git"
   },
   "keywords": [
     "mcp",
