@@ -1,0 +1,54 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run MCP Inspector",
+      "type": "node",
+      "request": "launch",
+      "localRoot": "${workspaceFolder}/packages/mcp-server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "inspect"
+      ]
+    },
+    {
+      "name": "Run MCP Server",
+      "type": "node",
+      "request": "launch",
+      "localRoot": "${workspaceFolder}/packages/mcp-server",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ]
+    },
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/mcp-adapter-vscode",
+        "${workspaceFolder}/packages/demos/nodejs",
+      ],
+      "outFiles": [
+        "${workspaceFolder}/packages/mcp-adapter-vscode/dist/**/*.js"
+      ],
+      "preLaunchTask": "npm: build:watch - packages/mcp-adapter-vscode",
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Developer Mode",
+      "configurations": [
+        "Run MCP Inspector",
+        "Run MCP Server",
+        "Run Extension"
+      ]
+    }
+  ]
+}

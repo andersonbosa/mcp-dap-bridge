@@ -1,16 +1,20 @@
 {
-  "name": "demo-app",
+  "name": "mcp-debugx-demos-nodejs",
   "version": "1.0.0",
-  "description": "",
+  "description": "MCP DebugX Demos - Node.js",
+  "author": "Anderson Bosa",
+  "license": "CC-BY-SA-4.0",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andersonbosa/mcp-debugx.git"
+  },
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "NODE_OPTIONS='--inspect' node index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "express": "^5.1.0"
   },

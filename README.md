@@ -120,9 +120,8 @@ mcp_debug_bridge/
 │   │   │   └── utils/             # Utilities and logging
 │   │   └── Dockerfile
 │   │
-│   └── demo-app/                  # Testing and demonstration
-│       ├── index.mjs
-│       └── client.http
+│   └── demos/                  # Testing and demonstration applications
+│       └── nodejs/
 │
 ├── CONTRIBUTING.md
 ├── LICENSE.md
