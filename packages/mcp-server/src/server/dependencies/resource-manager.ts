@@ -1,6 +1,6 @@
 import { Resource } from "@modelcontextprotocol/sdk/types.js"
 
-import { logger } from "@andersonbosa/mcp-debug-ex-core"
+import { logger } from "@andersonbosa/mcp-debugx-core"
 import { BaseResource } from "../../resources/base-resource"
 import { FileResource } from "../../resources/file-resource"
 

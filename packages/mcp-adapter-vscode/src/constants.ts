@@ -1,5 +1,5 @@
 
-export const EXT_KEYID = 'mcpDebugExVscodeAdapter'
+export const EXT_KEYID = 'mcpDebugxVscodeAdapter'
 
 function withPrefix(cmdKey: string) {
     return `${EXT_KEYID}.${cmdKey}`

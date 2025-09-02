@@ -1,7 +1,7 @@
 import { BaseTool } from "../base-tool"
-import { logger } from "@andersonbosa/mcp-debug-ex-core"
+import { logger } from "@andersonbosa/mcp-debugx-core"
 import { ToolResult } from "../../types"
-import { StandardCommandResponse, IsDebuggerActiveResponse, isErrorResponse } from "@andersonbosa/mcp-debug-ex-core"
+import { StandardCommandResponse, IsDebuggerActiveResponse, isErrorResponse } from "@andersonbosa/mcp-debugx-core"
 import { withIDE } from "../decorators/with-ide.decorator"
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 

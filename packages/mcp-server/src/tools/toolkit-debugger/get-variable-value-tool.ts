@@ -1,7 +1,7 @@
-import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/mcp-debug-ex-core"
+import { StandardCommandResponse, isErrorResponse } from "@andersonbosa/mcp-debugx-core"
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { ToolResult } from "../../types"
-import { logger } from "@andersonbosa/mcp-debug-ex-core"
+import { logger } from "@andersonbosa/mcp-debugx-core"
 import { BaseTool } from "../base-tool"
 
 type GetVariableValueToolInput = {

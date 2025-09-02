@@ -1,6 +1,6 @@
-export * from '@andersonbosa/mcp-debug-ex-core'
+export * from '@andersonbosa/mcp-debugx-core'
 import * as vscode from 'vscode'
-import { StandardCommandResponse } from '@andersonbosa/mcp-debug-ex-core'
+import { StandardCommandResponse } from '@andersonbosa/mcp-debugx-core'
 export interface DapRequestMessage<Args = any> {
   type: 'dap_request';
   request_id: string;

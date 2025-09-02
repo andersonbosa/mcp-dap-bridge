@@ -1,4 +1,4 @@
-import { IsDebuggerActiveResponse, isErrorResponse, StandardCommandResponse } from "@andersonbosa/mcp-debug-ex-core"
+import { IsDebuggerActiveResponse, isErrorResponse, StandardCommandResponse } from "@andersonbosa/mcp-debugx-core"
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { BaseTool } from "../base-tool"
 
