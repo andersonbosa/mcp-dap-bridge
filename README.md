@@ -1,80 +1,43 @@
-# MCP Debug Bridge
+# MCP DebugX
 
-A comprehensive system that bridges the Model Context Protocol (MCP) with the Debug Adapter Protocol (DAP), enabling AI assistants to control debugging sessions through natural language commands.
+A comprehensive system that bridges the Model Context Protocol (MCP) with the Debug Adapter Protocol (DAP), enhancing the developer debugging experience with AI-powered debugging assistance. The project provides an MCP server with debugging capabilities and a VS Code extension as the first MCP client.
 
 ## Overview
 
-MCP Debug Bridge provides a complete debugging toolkit for AI assistants, allowing them to interact with VS Code/Cursor debugging features through a standardized MCP server. The system translates MCP commands into DAP operations, enabling real-time debugging control, variable inspection, execution flow management, and comprehensive session analysis.
-
-## Features
-
-### 🎮 **Execution Control**
-- **Continue/Pause execution** from breakpoints
-- **Step operations** (over, into, out) with granularity control
-- **Thread management** and switching between execution contexts
-
-### 🔍 **Variable Inspection & Modification**
-- **Get variable values** from any scope (local, global, arguments)
-- **Set variable values** during debugging sessions
-- **Scope-aware variable access** with frame context
-
-### 🔧 **Breakpoint Management**
-- **Set breakpoints** in multiple files and lines
-- **Remove breakpoints** individually or in batch
-- **Dynamic breakpoint control** during execution
-
-### 📊 **Session Analysis**
-- **Real-time stack trace inspection** with detailed frame information
-- **Thread listing and analysis** with status monitoring
-- **Local variables enumeration** in current context
-
-### 🚀 **Transport & Compliance**
-- **Streamable HTTP transport** (MCP 2025-06-18 compliant)
-- **WebSocket communication** between extension and server
-- **Session management** with secure UUID-based sessions
-- **DNS rebinding protection** and Origin validation
-- **CORS support** for web-based MCP clients
-
-### 🛠️ **Developer Experience**
-- **14 comprehensive debugging tools** available via MCP
-- **TypeScript support** with full type safety
-- **Robust error handling** with descriptive messages
-- **Structured logging** for debugging and monitoring
-- **Docker support** for containerized deployment
+MCP DebugX enhances the developer debugging experience by providing AI assistants with direct access to debugging sessions through a standardized MCP server. The system consists of three main packages: a core library for shared types and utilities, an MCP server with comprehensive debugging tools, and a VS Code extension that bridges the gap between the IDE's debugging capabilities and the MCP server.
 
 ## Available Tools
 
-The MCP server provides 14 comprehensive debugging tools:
+The MCP server provides 15 comprehensive debugging tools organized in two toolkits:
 
-### **Execution Control**
+### **Debugger Toolkit (12 tools)**
 - `isDebuggerActive` - Check if debugging session is active
 - `continue` - Continue program execution from current breakpoint
 - `pause` - Pause program execution
 - `stepOver` - Execute next line without entering functions
 - `stepInto` - Step into function calls
 - `stepOut` - Step out of current function
-
-### **Stack & Context Inspection**
 - `getStackTrace` - Get current call stack with frame details
 - `listLocalVariables` - List variables in current scope
-
-### **Variable Management**
 - `getVariableValue` - Get value of specific variable by name
 - `setVariableValue` - Modify variable value during debugging
-
-### **Breakpoint Management**
-- `setBreakpoints` - Set breakpoints in files at specific lines
-- `removeBreakpoints` - Remove specific or all breakpoints
-
-### **Thread Management**
 - `listThreads` - List all active threads in debug session
 - `getThreadInfo` - Get detailed information about specific thread
+
+### **IDE Toolkit (3 tools)**
+- `setBreakpoints` - Set breakpoints in files at specific lines
+- `removeBreakpoints` - Remove specific or all breakpoints
+- `listBreakpoints` - List all currently set breakpoints
+
+## Supported IDE's
+
+- VSCode
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- Node.js 22 or higher
 - Visual Studio Code or Cursor
 - npm or yarn
 
@@ -82,8 +45,8 @@ The MCP server provides 14 comprehensive debugging tools:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/andersonbosa/mcp-debug-bridge.git
-cd mcp-debug-bridge
+git clone https://github.com/andersonbosa/mcp-debugx.git
+cd mcp-debugx
 ```
 
 2. Install dependencies:
@@ -102,25 +65,35 @@ npm run build
 ```
 mcp_debug_bridge/
 ├── packages/
-│   ├── dap-bridge-extension/      # VS Code/Cursor extension
+│   ├── mcp-core/                  # Shared core library
+│   │   ├── src/
+│   │   │   ├── index.ts           # Core exports
+│   │   │   ├── types.ts           # Shared TypeScript definitions
+│   │   │   └── utils/             # Shared utilities
+│   │   └── package.json
+│   │
+│   ├── mcp-adapter-vscode/        # VS Code extension (first MCP client)
 │   │   ├── src/
 │   │   │   ├── extension.ts       # Main extension entry point
-│   │   │   ├── command-handler.ts # DAP request handling
-│   │   │   └── types.ts           # TypeScript definitions
+│   │   │   ├── core/              # Message routing and WebSocket client
+│   │   │   ├── adaptors/          # DAP and IDE command handlers
+│   │   │   └── utils/             # Extension utilities
 │   │   └── package.json
 │   │
 │   ├── mcp-server/                # MCP Server with debugging tools
 │   │   ├── src/
 │   │   │   ├── server/            # MCP server implementation
-│   │   │   ├── tools/             # Debugging toolkit
-│   │   │   │   ├── debugger-toolkit/
-│   │   │   │   ├── echo-tool.ts
-│   │   │   │   └── file-read-tool.ts
+│   │   │   ├── tools/             # Debugging toolkits
+│   │   │   │   ├── toolkit-debugger/   # 12 debugging tools
+│   │   │   │   ├── toolkit-ide/        # 3 IDE integration tools
+│   │   │   │   ├── decorators/         # Tool decorators
+│   │   │   │   └── examples/           # Example tools
 │   │   │   ├── resources/         # MCP resources
-│   │   │   └── utils/             # Utilities and logging
+│   │   │   ├── config/            # Server configuration
+│   │   │   └── utils/             # Server utilities
 │   │   └── Dockerfile
 │   │
-│   └── demos/                  # Testing and demonstration applications
+│   └── demos/                     # Testing and demonstration applications
 │       └── nodejs/
 │
 ├── CONTRIBUTING.md
@@ -138,7 +111,7 @@ npm run dev
 
 2. **Install and run the VS Code extension:**
 ```bash
-cd packages/dap-bridge-extension
+cd packages/mcp-adapter-vscode
 # Press F5 in VS Code to start debugging the extension
 ```
 
@@ -150,13 +123,18 @@ cd packages/dap-bridge-extension
 
 ### Using the Debugging Tools
 
-Once the extension is running and you have an active debugging session, you can use the MCP tools using https://github.com/modelcontextprotocol/inspector in `mcp-server` package:
+Once the extension is running and you have an active debugging session, you can use the MCP tools through the MCP Inspector in the `mcp-server` package:
 
 ```bash
+cd packages/mcp-server
 npm run inspect
 ```
 
+This will start the MCP Inspector UI that allows you to test and interact with all available debugging tools.
+
 ## Configuration
+
+### MCP Server Configuration
 
 The MCP server can be configured through environment variables:
 
@@ -165,6 +143,14 @@ The MCP server can be configured through environment variables:
 - `PORT`: HTTP port for MCP server (default: 3001)
 - `LOG_LEVEL`: Logging level (info, debug, error, default: info)
 - `WEBSOCKET_PORT`: WebSocket port for DAP communication (default: 8445)
+- `SERVER_TOOLS_DISABLED`: Comma-separated list of tools to disable
+
+### VS Code Extension Configuration
+
+The extension can be configured through VS Code settings:
+
+- `mcpAdapterForVSCode.wsServerUrl`: WebSocket URL for the MCP server connection (default: "ws://localhost:8445")
+- `mcpAdapterForVSCode.mcpServerUrl`: MCP server URL for direct communication (default: "ws://localhost:8445")
 
 ## Technical Details
 
@@ -182,28 +168,31 @@ The MCP server can be configured through environment variables:
 
 ### **Architecture**
 - **Modular design** with clean separation of concerns
+- **Three-package architecture**: Core library, MCP server, and VS Code extension
 - **Type-safe implementation** with comprehensive TypeScript definitions
-- **Robust error handling** with structured logging
-- **Extensible toolkit** for adding new debugging capabilities
+- **Robust error handling** with structured logging and decorators
+- **Extensible toolkit** with factory patterns for adding new debugging capabilities
+- **WebSocket-based communication** between extension and server with message routing
 
 ## Use Cases
 
-### **AI-Powered Debugging**
-Enable AI assistants to:
-- Analyze program execution flow and identify issues
-- Set strategic breakpoints based on code analysis
-- Inspect variable states and suggest optimizations
-- Guide developers through complex debugging scenarios
+### **Enhanced Developer Experience**
+- **AI-powered debugging assistance**: Enable AI assistants to analyze program execution flow and identify issues
+- **Strategic breakpoint management**: AI can set and manage breakpoints based on code analysis
+- **Variable inspection and optimization**: Real-time variable state analysis with AI-suggested optimizations
+- **Guided debugging**: AI provides step-by-step debugging guidance for complex scenarios
 
-### **Automated Testing**
-- Set up automated debugging sessions for test analysis
-- Capture execution traces for performance analysis
-- Validate program state at specific execution points
+### **Automated Testing & Analysis**
+- **Automated debugging sessions** for test analysis and validation
+- **Execution trace capture** for performance analysis
+- **Program state validation** at specific execution points
+- **Regression debugging** with AI-assisted issue identification
 
-### **Educational Tools**
-- Create interactive debugging tutorials
-- Demonstrate execution flow for learning purposes
-- Provide guided debugging assistance for students
+### **Educational & Learning Tools**
+- **Interactive debugging tutorials** with AI guidance
+- **Execution flow demonstration** for learning purposes
+- **Code behavior analysis** for educational content
+- **Guided debugging assistance** for students and junior developers
 
 ## Contributing
 
@@ -222,6 +211,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-- [Model Context Protocol](https://modelcontextprotocol.io/) for the standardized AI-server communication
-- [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/) for debugging integration
-- Visual Studio Code team for the extension architecture
+- [Model Context Protocol](https://modelcontextprotocol.io/) for the standardized AI-server communication framework
+- [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/) for comprehensive debugging integration
+- Visual Studio Code team for the robust extension architecture and debugging APIs

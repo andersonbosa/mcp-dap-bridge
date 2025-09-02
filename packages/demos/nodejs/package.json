@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "MCP DebugX Demos - Node.js",
   "author": "Anderson Bosa",
-  "license": "CC-BY-SA-4.0",
+  "license": "MIT",
   "keywords": [],
   "repository": {
     "type": "git",
