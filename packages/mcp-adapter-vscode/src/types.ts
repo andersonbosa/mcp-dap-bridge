@@ -2,23 +2,23 @@ export * from '@andersonbosa/mcp-debugx-core'
 import * as vscode from 'vscode'
 import { StandardCommandResponse } from '@andersonbosa/mcp-debugx-core'
 export interface DapRequestMessage<Args = any> {
-  type: 'dap_request';
-  request_id: string;
-  command: string;
-  args: Args;
+  type: 'dap_request'
+  request_id: string
+  command: string
+  args: Args
 }
 
 export interface IdeRequestMessage<Args = any> {
-  type: 'ide_command';
-  request_id: string;
-  command: string;
-  args: Args;
+  type: 'ide_command'
+  request_id: string
+  command: string
+  args: Args
 }
 
 export interface DapResponseMessage {
-  type: 'dap_response';
-  request_id: string;
-  body: any;
+  type: 'dap_response'
+  request_id: string
+  body: any
 }
 
 
