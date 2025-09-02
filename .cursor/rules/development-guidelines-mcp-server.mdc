@@ -1,6 +1,7 @@
 ---
 alwaysApply: false
 description: Guidelines for secure, compliant, robust, and well-documented MCP server development, ensuring reliable interoperability with MCP clients.
+---
 # MCP Server Development Guidelines
 
 ## Overview

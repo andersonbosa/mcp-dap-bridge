@@ -1,15 +1,19 @@
 {
-  "name": "@andersonbosa/mcp-server",
+  "name": "@andersonbosa/mcp-debug-ex-server",
   "version": "1.0.0",
-  "description": "MCP Server Boilerplate with Docker support",
+  "description": "MCP DebugEx Server",
+  "author": "Anderson Bosa",
+  "license": "CC-BY-SA-4.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andersonbosa/mcp-debug-ex.git"
+  },
   "keywords": [
     "mcp",
     "server",
     "typescript",
     "docker"
   ],
-  "author": "Anderson Bosa",
-  "license": "CC-BY-SA-4.0",
   "engines": {
     "node": ">=22"
   },
@@ -36,7 +40,7 @@
     "docker:clean": "docker-compose down -v && docker image prune -f"
   },
   "dependencies": {
-    "@andersonbosa/core-bridge": "file:../core-bridge",
+    "@andersonbosa/mcp-debug-ex-core": "file:../mcp-core",
     "@modelcontextprotocol/inspector": "^0.16.5",
     "@modelcontextprotocol/sdk": "^1.17.4",
     "dotenv": "^17.2.1",

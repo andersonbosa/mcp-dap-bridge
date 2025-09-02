@@ -1,5 +1,5 @@
 {
-  "name": "@andersonbosa/core-bridge",
+  "name": "@andersonbosa/mcp-debug-ex-core",
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",

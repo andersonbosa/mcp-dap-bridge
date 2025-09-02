@@ -1,6 +1,6 @@
 import { WebSocketManager } from "../../server/dependencies/websocket-manager"
 import { ToolResult } from "../../types"
-import { logger } from "@andersonbosa/core-bridge"
+import { logger } from "@andersonbosa/mcp-debug-ex-core"
 import { BaseTool } from "../base-tool"
 import { withIDE } from "../decorators/with-ide.decorator"
 

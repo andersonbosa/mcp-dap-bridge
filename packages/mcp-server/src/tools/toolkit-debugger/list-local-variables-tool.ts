@@ -1,5 +1,5 @@
 import { BaseTool } from "../base-tool"
-import { logger } from "@andersonbosa/core-bridge"
+import { logger } from "@andersonbosa/mcp-debug-ex-core"
 import { ToolResult } from "../../types";
 
 export class ListLocalVariablesTool extends BaseTool {

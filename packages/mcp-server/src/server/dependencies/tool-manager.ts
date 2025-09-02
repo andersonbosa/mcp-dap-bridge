@@ -1,7 +1,7 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js"
 import { BaseTool } from "../../tools/base-tool"
 import { ToolsFactory } from "../../tools/tools.factory"
-import { logger } from "@andersonbosa/core-bridge"
+import { logger } from "@andersonbosa/mcp-debug-ex-core"
 import type { WebSocketManager } from "./websocket-manager"
 
 export class ToolManager {

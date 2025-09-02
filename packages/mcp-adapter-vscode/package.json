@@ -1,12 +1,13 @@
 {
-  "name": "@andersonbosa/mcp-adapter-vscode",
-  "displayName": "MCP Adapter for VSCode",
-  "description": "MCP Adapter for VSCode",
+  "name": "@andersonbosa/mcp-debug-ex-adapter-vscode",
   "version": "0.0.1",
-  "publisher": "andersonbosa",
+  "displayName": "MCP DebugEx Adapter for VSCode",
+  "description": "MCP DebugEx Adapter for VSCode",
+  "author": "Anderson Bosa",
+  "license": "CC-BY-SA-4.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andersonbosa/mcp-debug-bridge.git"
+    "url": "https://github.com/andersonbosa/mcp-debug-ex.git"
   },
   "categories": [
     "AI",
@@ -41,9 +42,9 @@
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"
-},
+  },
   "dependencies": {
-    "@andersonbosa/core-bridge": "file:../core-bridge",
+    "@andersonbosa/mcp-debug-ex-core": "file:../mcp-core",
     "ws": "^8.18.3"
   },
   "main": "./dist/extension.js",
@@ -56,18 +57,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "mcpVscodeAdapter.helloWorld",
+        "command": "mcpDebugExVscodeAdapter.helloWorld",
         "title": "Hello World",
-        "category": "MCP Adapter"
+        "category": "MCP DebugEx Adapter"
       }
     ],
     "configuration": {
-      "title": "MCP Adapter for VSCode",
+      "title": "MCP DebugEx Adapter for VSCode",
       "properties": {
         "mcpAdapterForVSCode.wsServerUrl": {
           "type": "string",
           "default": "ws://localhost:8445",
-          "description": "WebSocket URL for the MCP Server connection"
+          "description": "WebSocket URL for the MCP DebugEx Server connection"
+        },
+        "mcpAdapterForVSCode.mcpServerUrl": {
+          "type": "string",
+          "default": "ws://localhost:8445",
+          "description": "MCP DebugEx Server URL"
         }
       }
     }
