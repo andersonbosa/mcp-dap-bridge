@@ -51,7 +51,6 @@
   "engines": {
     "vscode": "^1.93.0",
     "node": ">=22"
-
   },
   "activationEvents": [
     "*"
@@ -61,7 +60,17 @@
       {
         "command": "mcpDebugxVscodeAdapter.helloWorld",
         "title": "Hello World",
-        "category": "MCP DebugX Adapter"
+        "category": "MCP DebugX"
+      },
+      {
+        "command": "mcpDebugxVscodeAdapter.pingMcpServer",
+        "title": "Ping MCP Server",
+        "category": "MCP DebugX"
+      },
+      {
+        "command": "mcpDebugxVscodeAdapter.pingWsServer",
+        "title": "Ping WS Server",
+        "category": "MCP DebugX"
       }
     ],
     "configuration": {

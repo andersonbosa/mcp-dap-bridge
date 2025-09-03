@@ -18,6 +18,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "build:watch": "tsc --watch",
     "lint": "eslint src --ext .ts",
     "prepare": "npm run build"
   },

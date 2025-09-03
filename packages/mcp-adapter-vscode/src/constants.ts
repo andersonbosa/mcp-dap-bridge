@@ -15,3 +15,8 @@ export const CONFIGURATIONS_MAP = {
   WS_SERVER_URL: withPrefix('wsServerUrl'),
   MCP_SERVER_URL: withPrefix('mcpServerUrl')
 }
+
+export const MESSAGE_TYPES = {
+  DAP_REQUEST: 'dap_request',
+  IDE_REQUEST: 'ide_request'
+}

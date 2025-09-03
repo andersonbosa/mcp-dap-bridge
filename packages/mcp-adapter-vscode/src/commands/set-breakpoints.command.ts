@@ -1,6 +1,6 @@
+import { logger } from '@andersonbosa/mcp-debugx-core'
 import * as vscode from 'vscode'
-import { IdeCommandHandler } from "../../../types"
-import { logger } from '../../../utils/logger'
+import { IdeCommandHandler, BaseCommand, CommandContext } from '../types'
 
 type VSCodeLocationsByFile = { [uri: string]: vscode.Location[] }
 
@@ -15,9 +15,13 @@ type SetBreakpointsHandlerOutput = {
 
 /**
  * Handles the 'breakpoints/set' command by adding breakpoints at the specified locations.
+ * Now extends BaseCommand for unified command interface.
  */
-export class SetBreakpointsHandler implements IdeCommandHandler<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> {
-  async execute(input: SetBreakpointsHandlerInput): Promise<SetBreakpointsHandlerOutput> {
+export class SetBreakpointsCommand extends BaseCommand<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> implements IdeCommandHandler<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> {
+  readonly command = 'breakpoints/set'
+  async execute(input: SetBreakpointsHandlerInput, context?: CommandContext): Promise<SetBreakpointsHandlerOutput> {
+    this.validateInput(input)
+    
     const { locations } = input
     if (!locations || locations.length === 0) {
       throw new Error("At least one location must be provided to set breakpoints.")
@@ -26,7 +30,7 @@ export class SetBreakpointsHandler implements IdeCommandHandler<SetBreakpointsHa
     const locationsByFile = await this._groupLocationsByFile(locations)
     const { totalSet, fileCount } = this._addBreakpointsToVSCode(locationsByFile)
 
-    return { totalSet, fileCount }
+    return this.postProcess({ totalSet, fileCount }, context)
   }
 
   private async _groupLocationsByFile(locations: { file: string; line: number }[]): Promise<VSCodeLocationsByFile> {

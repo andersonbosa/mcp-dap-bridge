@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { CommandResponseFactory } from '../../../core/command-response-factory'
-import { DapCommandHandler, DapRequestMessage, DefaultCommandResponse, StandardCommandResponse } from '../../../types'
+import { CommandResponseFactory } from './command-response-factory'
+import { DapCommandHandler, DapRequestMessage, DefaultCommandResponse, StandardCommandResponse } from '../types'
 
 /**
  * A handler for DAP commands that require an active debug session.

@@ -152,28 +152,6 @@ The extension can be configured through VS Code settings:
 - `mcpAdapterForVSCode.wsServerUrl`: WebSocket URL for the MCP server connection (default: "ws://localhost:8445")
 - `mcpAdapterForVSCode.mcpServerUrl`: MCP server URL for direct communication (default: "ws://localhost:8445")
 
-## Technical Details
-
-### **MCP Compliance**
-- Implements MCP specification 2025-06-18
-- Streamable HTTP transport with proper session management
-- Security features including DNS rebinding protection
-- Support for both application/json and text/event-stream content types
-
-### **DAP Integration**
-- Full Debug Adapter Protocol implementation
-- WebSocket-based communication between extension and server
-- Support for multiple debugging languages and runtimes
-- Thread-safe operations with proper error handling
-
-### **Architecture**
-- **Modular design** with clean separation of concerns
-- **Three-package architecture**: Core library, MCP server, and VS Code extension
-- **Type-safe implementation** with comprehensive TypeScript definitions
-- **Robust error handling** with structured logging and decorators
-- **Extensible toolkit** with factory patterns for adding new debugging capabilities
-- **WebSocket-based communication** between extension and server with message routing
-
 ## Use Cases
 
 ### **Enhanced Developer Experience**
@@ -208,9 +186,3 @@ Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our co
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Acknowledgments
-
-- [Model Context Protocol](https://modelcontextprotocol.io/) for the standardized AI-server communication framework
-- [Debug Adapter Protocol](https://microsoft.github.io/debug-adapter-protocol/) for comprehensive debugging integration
-- Visual Studio Code team for the robust extension architecture and debugging APIs
