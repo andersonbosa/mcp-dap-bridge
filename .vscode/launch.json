@@ -39,7 +39,28 @@
         "${workspaceFolder}/packages/mcp-adapter-vscode/dist/**/*.js"
       ],
       "preLaunchTask": "npm: build:watch - packages/mcp-adapter-vscode",
-    }
+    },
+    {
+      "name": "Build MCP Core",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run build:watch",
+      "cwd": "${workspaceFolder}/packages/mcp-core"
+    },
+    {
+      "name": "Build MCP Server",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run build:watch",
+      "cwd": "${workspaceFolder}/packages/mcp-server"
+    },
+    {
+      "name": "Build Extension",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run build:watch",
+      "cwd": "${workspaceFolder}/packages/mcp-adapter-vscode"
+    },
   ],
   "compounds": [
     {
@@ -49,6 +70,14 @@
         "Run MCP Server",
         "Run Extension"
       ]
-    }
+    },
+    {
+      "name": "Build mode",
+      "configurations": [
+        "Build MCP Core",
+        "Build MCP Server",
+        "Build Extension"
+      ]
+    },
   ]
 }
