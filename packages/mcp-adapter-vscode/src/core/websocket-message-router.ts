@@ -2,7 +2,7 @@ import * as vscode from 'vscode'
 import { DapRequestMessage, IdeRequestMessage, CommandContext } from '../types'
 import { logger } from '../utils/logger'
 import { WebsocketClient } from './websocket-client'
-import { CommandManager } from '../commands/command-manager'
+import { CommandManager } from './command-manager'
 import { MESSAGE_TYPES } from '../constants'
 
 

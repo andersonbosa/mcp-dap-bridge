@@ -1,26 +1,35 @@
 import * as vscode from 'vscode'
-import { CommandResponseFactory } from './command-response-factory'
-import { DapCommandHandler, DapRequestMessage, DefaultCommandResponse, StandardCommandResponse } from '../types'
+import { BaseCommand, CommandContext, DefaultCommandResponse, StandardCommandResponse } from '../types'
+import { CommandResponseFactory } from '../core/command-response-factory'
 
 /**
- * A handler for DAP commands that require an active debug session.
+ * A handler for custom DAP commands that require an active debug session.
+ * This is a generic handler that can execute any DAP command.
  */
-export class CustomVSCodeDAPHandler implements DapCommandHandler<any, DefaultCommandResponse> {
-  constructor(readonly command: string) { }
+export class CustomVSCodeDAPCommand extends BaseCommand<any, StandardCommandResponse<DefaultCommandResponse>> {
+  constructor(readonly command: string) {
+    super()
+  }
 
-  async handle(session: vscode.DebugSession | undefined, message: DapRequestMessage<any>): Promise<StandardCommandResponse<DefaultCommandResponse>> {
+  async execute(args: any, context?: CommandContext): Promise<StandardCommandResponse<DefaultCommandResponse>> {
+    this.validateInput(args)
     const startTime = Date.now()
+    const session = context?.session as vscode.DebugSession | undefined
 
     if (!session) {
-      throw new Error("No active debug session found for this command.")
+      throw new Error(`No active debug session found for custom DAP command: ${this.command}`)
     }
 
-    const result = await session.customRequest(message.command, message.args)
+    const result = await session.customRequest(this.command, args)
 
     return CommandResponseFactory.createWithDebugSession(
       result,
       session.id,
-      startTime
+      startTime,
+      {
+        customCommand: this.command,
+        isGenericHandler: true
+      }
     )
   }
 }

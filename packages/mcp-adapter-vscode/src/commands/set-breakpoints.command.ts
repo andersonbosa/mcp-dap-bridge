@@ -1,6 +1,6 @@
 import { logger } from '@andersonbosa/mcp-debugx-core'
 import * as vscode from 'vscode'
-import { IdeCommandHandler, BaseCommand, CommandContext } from '../types'
+import { BaseCommand, CommandContext } from '../types'
 
 type VSCodeLocationsByFile = { [uri: string]: vscode.Location[] }
 
@@ -17,8 +17,9 @@ type SetBreakpointsHandlerOutput = {
  * Handles the 'breakpoints/set' command by adding breakpoints at the specified locations.
  * Now extends BaseCommand for unified command interface.
  */
-export class SetBreakpointsCommand extends BaseCommand<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> implements IdeCommandHandler<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> {
-  readonly command = 'breakpoints/set'
+export class SetBreakpointsCommand extends BaseCommand<SetBreakpointsHandlerInput, SetBreakpointsHandlerOutput> {
+  readonly command = 'setBreakpoints'
+  
   async execute(input: SetBreakpointsHandlerInput, context?: CommandContext): Promise<SetBreakpointsHandlerOutput> {
     this.validateInput(input)
     

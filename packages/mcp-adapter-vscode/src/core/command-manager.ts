@@ -1,10 +1,21 @@
 import { logger } from "@andersonbosa/mcp-debugx-core"
 import { Command, CommandContext } from "../types"
-import { IsDebuggerActiveCommand } from "./is-debugger-active.command"
-import { ListBreakpointsCommand } from "./list-breakpoints.command"
-import { RemoveBreakpointsCommand } from "./remove-breakpoints.command"
-import { SetBreakpointsInFilesCommand } from "./set-breakpoints-in-files.command"
-import { SetBreakpointsCommand } from "./set-breakpoints.command"
+import { ContinueCommand } from "../commands/continue.command"
+import { GetStackTraceCommand } from "../commands/get-stack-trace.command"
+import { GetThreadInfoCommand } from "../commands/get-thread-info.command"
+import { GetVariableValueCommand } from "../commands/get-variable-value.command"
+import { IsDebuggerActiveCommand } from "../commands/is-debugger-active.command"
+import { ListBreakpointsCommand } from "../commands/list-breakpoints.command"
+import { ListLocalVariablesCommand } from "../commands/list-local-variables.command"
+import { ListThreadsCommand } from "../commands/list-threads.command"
+import { PauseCommand } from "../commands/pause.command"
+import { RemoveBreakpointsCommand } from "../commands/remove-breakpoints.command"
+import { SetBreakpointsInFilesCommand } from "../commands/set-breakpoints-in-files.command"
+import { SetBreakpointsCommand } from "../commands/set-breakpoints.command"
+import { SetVariableValueCommand } from "../commands/set-variable-value.command"
+import { StepIntoCommand } from "../commands/step-into.command"
+import { StepOutCommand } from "../commands/step-out.command"
+import { StepOverCommand } from "../commands/step-over.command"
 
 /**
  * Centralized command handler manager that supports unified Command interface.
@@ -88,23 +99,24 @@ export class CommandManager {
   public getCommandsByCategory(category: 'dap' | 'ide' | 'native'): string[] {
     const allCommands = this.getRegisteredCommands()
 
+    const dapCommands = [
+      'isDebuggerActive', 'continue', 'pause', 'stepOver', 'stepInto', 'stepOut',
+      'getStackTrace', 'listLocalVariables', 'getVariableValue', 'setVariableValue',
+      'listThreads', 'getThreadInfo', 'setBreakpointsInFiles' // legacy
+    ]
+
+    const ideCommands = [
+      'setBreakpoints', 'removeBreakpoints', 'listBreakpoints'
+    ]
+
     switch (category) {
       case 'dap':
-        return allCommands.filter(cmd =>
-          cmd === 'setBreakpointsInFiles' ||
-          cmd === 'isDebuggerActive' ||
-          cmd === 'listBreakpoints'
-        )
+        return allCommands.filter(cmd => dapCommands.includes(cmd))
       case 'ide':
-        return allCommands.filter(cmd =>
-          cmd.startsWith('breakpoints/') // IDE commands use namespaced format
-        )
+        return allCommands.filter(cmd => ideCommands.includes(cmd))
       case 'native':
-        return allCommands.filter(cmd =>
-          !cmd.startsWith('breakpoints/') &&
-          cmd !== 'setBreakpointsInFiles' &&
-          cmd !== 'isDebuggerActive' &&
-          cmd !== 'listBreakpoints'
+        return allCommands.filter(cmd => 
+          !dapCommands.includes(cmd) && !ideCommands.includes(cmd)
         )
       default:
         return []
@@ -163,15 +175,27 @@ export class CommandManager {
    */
   private initializeHandlers() {
     const handlers: Command<any, any>[] = [
-      // DAP Commands - for debugging session interactions
-      new SetBreakpointsInFilesCommand(),
+      // Debugger Toolkit (12 tools) - DAP Commands
       new IsDebuggerActiveCommand(),
+      new ContinueCommand(),
+      new PauseCommand(),
+      new StepOverCommand(),
+      new StepIntoCommand(),
+      new StepOutCommand(),
+      new GetStackTraceCommand(),
+      new ListLocalVariablesCommand(),
+      new GetVariableValueCommand(),
+      new SetVariableValueCommand(),
+      new ListThreadsCommand(),
+      new GetThreadInfoCommand(),
+
+      // IDE Toolkit (3 tools) - IDE Commands
+      new SetBreakpointsCommand(),
+      new RemoveBreakpointsCommand(),
       new ListBreakpointsCommand(),
 
-      // IDE Commands - for VS Code IDE interactions
-      new ListBreakpointsCommand(),
-      new SetBreakpointsCommand(),
-      new RemoveBreakpointsCommand()
+      // Legacy DAP Commands (for backward compatibility)
+      new SetBreakpointsInFilesCommand()
     ]
 
     this.register(handlers)

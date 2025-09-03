@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { IdeCommandHandler, BaseCommand, CommandContext } from '../types'
+import { BaseCommand, CommandContext } from '../types'
 
 type RemoveBreakpointsHandlerInput = {
   file?: string
@@ -15,8 +15,8 @@ type RemoveBreakpointsHandlerOutput = {
  * Handles the 'breakpoints/remove' command by removing specified breakpoints.
  * Now extends BaseCommand for unified command interface.
  */
-export class RemoveBreakpointsCommand extends BaseCommand<RemoveBreakpointsHandlerInput, RemoveBreakpointsHandlerOutput> implements IdeCommandHandler<RemoveBreakpointsHandlerInput, RemoveBreakpointsHandlerOutput> {
-  readonly command = 'breakpoints/remove'
+export class RemoveBreakpointsCommand extends BaseCommand<RemoveBreakpointsHandlerInput, RemoveBreakpointsHandlerOutput> {
+  readonly command = 'removeBreakpoints'
   async execute(args: RemoveBreakpointsHandlerInput, context?: CommandContext): Promise<RemoveBreakpointsHandlerOutput> {
     this.validateInput(args)
 

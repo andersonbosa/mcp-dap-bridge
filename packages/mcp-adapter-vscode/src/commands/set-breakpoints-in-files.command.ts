@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { CommandResponseFactory } from './command-response-factory'
-import { DapCommandHandler, DapRequestMessage, SetBreakpointsInFilesResponse, StandardCommandResponse } from '../types'
+import { CommandResponseFactory } from '../core/command-response-factory'
+import { DapRequestMessage, SetBreakpointsInFilesResponse, StandardCommandResponse } from '../types'
 import { BaseCommand, CommandContext } from '../types'
 import { logger } from '../utils/logger'
 
@@ -18,7 +18,7 @@ type SetBreakpointsInFilesHandlerOutput = SetBreakpointsInFilesResponse
  * grouping breakpoints by file before sending them to the debug adapter.
  * Now extends BaseCommand for unified command interface.
  */
-export class SetBreakpointsInFilesCommand extends BaseCommand<SetBreakpointsInFilesHandlerInput, StandardCommandResponse<SetBreakpointsInFilesResponse>> implements DapCommandHandler<SetBreakpointsInFilesHandlerInput, SetBreakpointsInFilesResponse> {
+export class SetBreakpointsInFilesCommand extends BaseCommand<SetBreakpointsInFilesHandlerInput, StandardCommandResponse<SetBreakpointsInFilesResponse>> {
   readonly command = 'setBreakpointsInFiles';
 
   async execute(args: SetBreakpointsInFilesHandlerInput, context?: CommandContext): Promise<StandardCommandResponse<SetBreakpointsInFilesResponse>> {

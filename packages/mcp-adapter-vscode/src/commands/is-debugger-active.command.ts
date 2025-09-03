@@ -1,15 +1,14 @@
 import { IsDebuggerActiveResponse, StandardCommandResponse, logger } from '@andersonbosa/mcp-debugx-core'
 import * as vscode from 'vscode'
-import { CommandResponseFactory } from './command-response-factory'
-import { DapCommandHandler, DapRequestMessage } from '../types'
-import { BaseCommand, CommandContext } from '../types'
+import { BaseCommand, CommandContext, DapRequestMessage } from '../types'
+import { CommandResponseFactory } from '../core/command-response-factory'
 
 /**
  * A specialized handler to check if a debugger session is currently active.
  * This handler does not require an active session to begin with.
  * Now extends BaseCommand for unified command interface.
  */
-export class IsDebuggerActiveCommand extends BaseCommand<void, StandardCommandResponse<IsDebuggerActiveResponse>> implements DapCommandHandler<void, IsDebuggerActiveResponse> {
+export class IsDebuggerActiveCommand extends BaseCommand<void, StandardCommandResponse<IsDebuggerActiveResponse>> {
   readonly command = 'isDebuggerActive';
 
   async execute(args: void, context?: CommandContext): Promise<StandardCommandResponse<IsDebuggerActiveResponse>> {

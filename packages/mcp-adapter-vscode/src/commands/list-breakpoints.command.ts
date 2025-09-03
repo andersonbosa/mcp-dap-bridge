@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { IdeCommandHandler, BaseCommand, CommandContext } from '../types'
+import { BaseCommand, CommandContext } from '../types'
 
 type ListBreakpointsHandlerOutput = {
   breakpointsByFile: { [key: string]: { line: number; verified: boolean }[] }
@@ -10,8 +10,8 @@ type ListBreakpointsHandlerOutput = {
  * from the VS Code debug session.
  * Now extends BaseCommand for unified command interface.
  */
-export class ListBreakpointsCommand extends BaseCommand<void, ListBreakpointsHandlerOutput> implements IdeCommandHandler<void, ListBreakpointsHandlerOutput> {
-  readonly command = 'breakpoints/list'
+export class ListBreakpointsCommand extends BaseCommand<void, ListBreakpointsHandlerOutput> {
+  readonly command = 'listBreakpoints'
   async execute(args: void, context?: CommandContext): Promise<ListBreakpointsHandlerOutput> {
     this.validateInput(args)
     

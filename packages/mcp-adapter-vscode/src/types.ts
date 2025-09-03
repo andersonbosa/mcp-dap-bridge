@@ -1,6 +1,4 @@
 export * from '@andersonbosa/mcp-debugx-core'
-import { StandardCommandResponse } from '@andersonbosa/mcp-debugx-core'
-import * as vscode from 'vscode'
 export interface DapRequestMessage<Args = any> {
   type: 'dap_request'
   request_id: string
@@ -20,34 +18,6 @@ export interface DapResponseMessage {
   request_id: string
   body: any
 }
-
-
-/**
- * Interface for a handler that executes a specific IDE command.
- */
-export interface IdeCommandHandler<Input, Output> {
-  execute(args: Input): Promise<Output>
-}
-
-/**
- * Interface for a handler that executes a specific DAP command.
- */
-export interface DapCommandHandler<Input, Output> {
-  /**
-   * The name of the DAP command this handler can process.
-   */
-  readonly command: string
-
-  /**
-   * Executes the command logic.
-   * @param session The active debug session, which can be undefined for some commands.
-   * @param message The DAP request message, with typed arguments.
-   * @returns A promise that resolves with a StandardCommandResponse containing data and metadata.
-   */
-  handle(session: vscode.DebugSession | undefined, message: DapRequestMessage<Input>): Promise<StandardCommandResponse<Output>>
-}
-
-// ====== Core Command Interfaces ======
 
 /**
  * Base interface for all commands in the system.
