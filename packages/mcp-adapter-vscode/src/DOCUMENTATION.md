@@ -1,27 +1,47 @@
-# Arquitetura Unificada de Comandos
+# MCP VS Code Adapter
 
-## Visão Geral
+## Overview
 
-A nova arquitetura implementa uma abordagem orientada a objetos com padrões de design bem estabelecidos para gerenciar comandos de diferentes tipos (DAP, IDE, Native) de forma unificada.
+The architecture implements a simplified and efficient object-oriented approach to manage commands of different types (DAP, IDE) in a unified way. The current architecture has eliminated unnecessary complexities and maintains only the essential components.
 
-## Princípios Arquiteturais
+## Project Structure
+
+```
+src/
+├── commands/                           # Unified commands
+│   ├── command-manager.ts              # Command central hub
+│   ├── command-response-factory.ts     # Factory for DAP responses
+│   ├── *.command.ts                    # Individual commands
+├── core/                               # Central infrastructure
+│   ├── websocket-message-router.ts     # Message router
+│   └── websocket-client.ts             # WebSocket client
+├── utils/                              # Utilities
+│   └── logger.ts                       # Logging system
+├── constants.ts                        # System constants
+├── types.ts                            # Type definitions
+├── extension.ts                        # Extension entry point
+└── DOCUMENTATION.md                    
+```
+
+## Architectural Principles
 
 ### 1. **Single Responsibility Principle (SRP)**
-- **CommandHandlerManager**: Responsável apenas por registrar e localizar comandos
-- **MessageRouter**: Responsável apenas por fornecer dependências e rotear mensagens
-- **Command**: Responsável apenas por executar sua lógica específica
+- **CommandManager**: Responsible only for registering and locating commands
+- **WebsocketMessageRouter**: Responsible only for providing dependencies and routing messages
+- **Command**: Responsible only for executing its specific logic
 
 ### 2. **Dependency Inversion Principle (DIP)**
-- Comandos dependem da abstração `CommandContext`, não de implementações concretas
-- `MessageRouter` injeta dependências através do contexto
+- Commands depend on the `CommandContext` abstraction, not concrete implementations
+- `WebsocketMessageRouter` injects dependencies through the context
 
-### 3. **Open/Closed Principle (OCP)**
-- Novos comandos podem ser adicionados sem modificar código existente
-- Novos decorators podem ser criados para adicionar funcionalidades
+### 3. **Keep It Simple (KISS)**
+- Removed unused decorators and adapters
+- Flat structure for commands (easier to navigate)
+- Specific factory only where necessary (DAP responses)
 
-## Componentes Principais
+## Main Components
 
-### 1. Interface `Command`
+### 1. `Command` Interface
 ```typescript
 export interface Command<Input = any, Output = any> {
   readonly command: string
@@ -29,11 +49,11 @@ export interface Command<Input = any, Output = any> {
 }
 ```
 
-**Responsabilidades:**
-- Define contrato unificado para todos os comandos
-- Garante que todos os comandos tenham um nome e método de execução
+**Responsibilities:**
+- Defines unified contract for all commands
+- Ensures all commands have a name and execution method
 
-### 2. Classe `BaseCommand`
+### 2. `BaseCommand` Class
 ```typescript
 export abstract class BaseCommand<Input = any, Output = any> implements Command<Input, Output> {
   abstract readonly command: string
@@ -44,12 +64,12 @@ export abstract class BaseCommand<Input = any, Output = any> implements Command<
 }
 ```
 
-**Responsabilidades:**
-- Fornece implementação base comum para comandos
-- Oferece hooks para validação e pós-processamento
-- Implementa template method pattern
+**Responsibilities:**
+- Provides common base implementation for commands
+- Offers hooks for validation and post-processing
+- Implements template method pattern
 
-### 3. Interface `CommandContext`
+### 3. `CommandContext` Interface
 ```typescript
 export interface CommandContext {
   session?: any
@@ -58,14 +78,14 @@ export interface CommandContext {
 }
 ```
 
-**Responsabilidades:**
-- Carrega dependências externas (debug session, workspace info, etc.)
-- Fornece metadados sobre a execução
-- Isola comandos de dependências diretas do VS Code
+**Responsibilities:**
+- Carries external dependencies (debug session, workspace info, etc.)
+- Provides metadata about execution
+- Isolates commands from direct VS Code dependencies
 
-### 4. `CommandHandlerManager`
+### 4. `CommandManager`
 ```typescript
-export class CommandHandlerManager {
+export class CommandManager {
   private handlers: Map<string, Command<any, any>> = new Map()
   
   register(handlers: Command | Command[]): void
@@ -74,15 +94,17 @@ export class CommandHandlerManager {
 }
 ```
 
-**Responsabilidades:**
-- Atua como registry central de comandos
-- Fornece interface unificada para localização e execução
-- Não tem conhecimento de dependências específicas (VS Code, debug sessions, etc.)
+**Responsibilities:**
+- Acts as central command registry
+- Provides unified interface for command location and execution
+- Has no knowledge of specific dependencies (VS Code, debug sessions, etc.)
+- Auto-registers all available commands
 
-### 5. `MessageRouter`
+### 5. `WebsocketMessageRouter`
 ```typescript
-export class MessageRouter {
-  private commandHandlerManager: CommandHandlerManager
+export class WebsocketMessageRouter {
+  private commandManager: CommandManager
+  private websocketClient: WebsocketClient
   
   private createDapContext(message: DapRequestMessage): CommandContext
   private createIdeContext(message: IdeRequestMessage): CommandContext
@@ -91,110 +113,107 @@ export class MessageRouter {
 }
 ```
 
-**Responsabilidades:**
-- Injeta dependências específicas nos comandos através do contexto
-- Gerencia lifecycle das sessões de debug e workspace
-- Atua como composition root da aplicação
+**Responsibilities:**
+- Injects specific dependencies into commands through context
+- Manages lifecycle of debug sessions and workspace
+- Acts as application composition root
+- Manages WebSocket communication with MCP server
 
-## Padrões de Design Implementados
+### 6. `CommandResponseFactory`
+```typescript
+export class CommandResponseFactory {
+  static create<T>(data: T, options?: {...}): StandardCommandResponse<T>
+  static createWithDebugSession<T>(...): StandardCommandResponse<T>
+  static createWithoutDebugSession<T>(...): StandardCommandResponse<T>
+}
+```
+
+**Responsibilities:**
+- Standardizes DAP command responses
+- Adds consistent metadata
+- Facilitates response formatting
+
+## Implemented Design Patterns
 
 ### 1. **Command Pattern**
-- Encapsula requisições como objetos
-- Permite parametrização de objetos com diferentes requisições
-- Facilita logging, undo/redo, e enfileiramento
+- Encapsulates requests as objects
+- Unified interface for all command types
+- Facilitates logging and error handling
 
-### 2. **Decorator Pattern**
-```typescript
-// Exemplo: Adicionar suporte a sessão DAP
-const decoratedCommand = withDapSession(baseCommand)
-```
+### 2. **Registry Pattern**
+- `CommandManager` acts as central registry
+- Auto-discovery of commands
+- Unified interface for location
 
-**Benefícios:**
-- Adiciona funcionalidades sem modificar código original
-- Permite composição de comportamentos
-- Mantém Single Responsibility Principle
+### 3. **Factory Pattern (Specific)**
+- `CommandResponseFactory` for DAP response standardization
+- Consistent metadata creation
+- Reduces code duplication
 
-### 3. **Adapter Pattern**
-```typescript
-// Converter handlers legados para nova interface
-const adapter = new DapCommandAdapter(legacyHandler)
-```
+### 4. **Dependency Injection**
+- Dependencies injected through `CommandContext`
+- Decouples commands from VS Code infrastructure
+- Facilitates testing and mocking
 
-**Benefícios:**
-- Integra código legado com nova arquitetura
-- Permite migração gradual
-- Mantém compatibilidade com código existente
+### 5. **Template Method Pattern**
+- `BaseCommand` provides common structure
+- Hooks for validation and post-processing
+- Reusable default behavior
 
-### 4. **Factory Pattern**
-```typescript
-// Criação consistente de comandos
-const command = CommandFactory.createDapCommand(baseCommand)
-```
+## Execution Flow
 
-**Benefícios:**
-- Centraliza lógica de criação
-- Aplica decorators automaticamente
-- Reduz complexidade de setup
+### General Flow:
+1. **Extension** starts and activates `WebsocketMessageRouter`
+2. **WebsocketClient** establishes connection with MCP server
+3. **CommandManager** auto-registers all available commands
 
-### 5. **Registry Pattern**
-- `CommandHandlerManager` atua como registry central
-- Facilita descoberta de comandos
-- Permite inspeção runtime
+### For DAP Commands:
+1. **WebsocketMessageRouter** receives `DapRequestMessage`
+2. **WebsocketMessageRouter** collects DAP dependencies (`vscode.debug.activeDebugSession`)
+3. **WebsocketMessageRouter** creates `CommandContext` with dependencies
+4. **WebsocketMessageRouter** calls `CommandManager.executeCommand()`
+5. **CommandManager** locates the command
+6. **Command** executes with provided context
+7. **WebsocketMessageRouter** sends response via WebSocket
 
-### 6. **Dependency Injection**
-- Dependências injetadas através de `CommandContext`
-- Desacopla comandos de infraestrutura
-- Facilita testing e mocking
+### For IDE Commands:
+1. **WebsocketMessageRouter** receives `IdeRequestMessage`
+2. **WebsocketMessageRouter** collects IDE dependencies (`workspace`, `activeEditor`)
+3. **WebsocketMessageRouter** creates `CommandContext` with dependencies
+4. **CommandManager** executes command
+5. **Command** executes with IDE context
+6. **WebsocketMessageRouter** sends response
 
-## Fluxo de Execução
+## Current Architecture Advantages
 
-### Para Comandos DAP:
-1. **MessageRouter** recebe `DapRequestMessage`
-2. **MessageRouter** coleta dependências DAP (`vscode.debug.activeDebugSession`)
-3. **MessageRouter** cria `CommandContext` com dependências
-4. **MessageRouter** chama `CommandHandlerManager.executeCommand()`
-5. **CommandHandlerManager** localiza o comando
-6. **Command** executa com contexto fornecido
-7. **MessageRouter** envia resposta via WebSocket
+### 1. **Simplicity**
+- Single interface for all command types
+- Flat structure for easy navigation
+- No unnecessary complexity
 
-### Para Comandos IDE:
-1. **MessageRouter** recebe `IdeRequestMessage`
-2. **MessageRouter** coleta dependências IDE (`workspace`, `activeEditor`)
-3. **MessageRouter** cria `CommandContext` com dependências
-4. **CommandHandlerManager** executa comando
-5. **Command** executa com contexto IDE
-6. **MessageRouter** envia resposta
+### 2. **Testability**
+- Dependencies injected via context
+- Easy mocking and stubbing
+- Commands isolated from VS Code infrastructure
 
-## Vantagens da Nova Arquitetura
+### 3. **Maintainability**
+- Well-defined responsibilities
+- Low coupling between components
+- Clean and organized code
 
-### 1. **Unificação**
-- Interface única para todos os tipos de comando
-- Gerenciamento centralizado
-- Redução de duplicação de código
+### 4. **Extensibility**
+- New commands follow consistent pattern
+- Auto-registration of commands
+- Specific factory only where necessary
 
-### 2. **Testabilidade**
-- Dependências injetadas via contexto
-- Fácil mocking e stubbing
-- Comandos isolados de infraestrutura
+### 5. **Performance**
+- No overhead from unnecessary decorators
+- Direct command registration
+- Optimized WebSocket communication
 
-### 3. **Extensibilidade**
-- Novos comandos seguem mesmo padrão
-- Decorators para funcionalidades cross-cutting
-- Adapters para integração com código legado
+## Usage Examples
 
-### 4. **Manutenibilidade**
-- Responsabilidades bem definidas
-- Acoplamento baixo entre componentes
-- Código mais limpo e organizado
-
-### 5. **Flexibilidade**
-- Composição através de decorators
-- Factory patterns para criação consistente
-- Registry pattern para descoberta dinâmica
-
-## Exemplos de Uso
-
-### Criando um Novo Comando
+### Creating a New Command
 ```typescript
 class MyCommand extends BaseCommand<MyInput, MyOutput> {
   readonly command = 'myCommand'
@@ -202,11 +221,11 @@ class MyCommand extends BaseCommand<MyInput, MyOutput> {
   async execute(args: MyInput, context?: CommandContext): Promise<MyOutput> {
     this.validateInput(args)
     
-    // Acessar dependências através do contexto
+    // Access dependencies through context
     const session = context?.session
     const metadata = context?.metadata
     
-    // Lógica do comando...
+    // Command logic...
     const result = await this.processCommand(args, session)
     
     return this.postProcess(result, context)
@@ -214,69 +233,76 @@ class MyCommand extends BaseCommand<MyInput, MyOutput> {
 }
 ```
 
-### Aplicando Decorators
+### Registering a Command
 ```typescript
-// Comando básico
-const baseCommand = new MyCommand()
+// CommandManager auto-registers commands during initialization
+// To add a new command, simply add it to the list in initializeHandlers():
 
-// Adicionar suporte DAP
-const dapCommand = withDapSession(baseCommand)
+private initializeHandlers() {
+  const handlers: Command<any, any>[] = [
+    // Existing commands...
+    new MyCommand(),  // ← New command here
+  ]
+  this.register(handlers)
+}
+```
 
-// Múltiplos decorators
-const hybridCommand = CommandFactory.createDecoratedCommand(
-  baseCommand,
-  [withDapSession, withIdeSession]
+### Using CommandResponseFactory (for DAP)
+```typescript
+// In a DAP command:
+return CommandResponseFactory.createWithDebugSession(
+  { result: processedData },
+  session.id,
+  startTime,
+  { customMetadata: 'value' }
 )
 ```
 
-### Registrando Comandos
-```typescript
-const manager = new CommandHandlerManager()
-manager.register([
-  new SetBreakpointsInFilesHandler(),
-  new IsDebuggerActiveHandler(),
-  withDapSession(new MyCustomCommand())
-])
+## Available Commands
+
+### DAP Commands (Debug Adapter Protocol)
+- **`setBreakpointsInFiles`**: Sets breakpoints in specific files
+- **`isDebuggerActive`**: Checks if there's an active debug session
+- **`listBreakpoints`**: Lists all active breakpoints
+
+### IDE Commands (VS Code Integration)
+- **`breakpoints/set`**: Sets breakpoints via IDE interface
+- **`breakpoints/list`**: Lists breakpoints via IDE interface
+- **`breakpoints/remove`**: Removes specific breakpoints
+
+### Special Command
+- **`custom-vscode-dap`**: Custom handler for unmapped DAP commands
+
+## File Structure
+
+### Individual Commands
+```
+commands/
+├── set-breakpoints-in-files.command.ts    # DAP: Set breakpoints in files
+├── is-debugger-active.command.ts          # DAP: Check active session
+├── list-breakpoints.command.ts            # DAP: List breakpoints
+├── set-breakpoints.command.ts             # IDE: Set breakpoints
+├── remove-breakpoints.command.ts          # IDE: Remove breakpoints
+└── custom-vscode-dap.command.ts           # DAP: Custom handler
 ```
 
-## Migração do Código Legado
+## Migration Status
 
-### Antes (Código Legado)
-```typescript
-// DapCommandManager específico
-class DapCommandManager {
-  private handlers: Map<string, DapCommandHandler>
-  // Lógica específica para DAP...
-}
+### ✅ Completed
+- Unified architecture implemented
+- Migration of all existing handlers
+- Integration with WebsocketMessageRouter
+- Removal of unused decorators and adapters
+- File structure simplification
+- Documentation updated
 
-// IdeCommandManager específico  
-class IdeCommandManager {
-  private handlers: Map<string, IdeCommandHandler>
-  // Lógica específica para IDE...
-}
-```
+### 🎯 Final Architecture
+- **1 Central Manager**: `CommandManager`
+- **1 Specific Factory**: `CommandResponseFactory` (DAP only)
+- **Flat Structure**: Commands organized simply
+- **Dependency Injection**: Via `CommandContext`
+- **Auto-registration**: Commands registered automatically
 
-### Depois (Nova Arquitetura)
-```typescript
-// Manager unificado
-class CommandHandlerManager {
-  private handlers: Map<string, Command>
-  // Lógica genérica para todos os tipos...
-}
+## Conclusion
 
-// Dependências injetadas pelo MessageRouter
-// Comandos não têm conhecimento direto do VS Code
-```
-
-## Próximos Passos
-
-1. **Fase 1**: ✅ Implementação da arquitetura base
-2. **Fase 2**: ✅ Migração dos handlers existentes  
-3. **Fase 3**: ✅ Integração com MessageRouter
-4. **Fase 4**: 🔄 Testing e validação
-5. **Fase 5**: 📋 Remoção de código legado deprecado
-6. **Fase 6**: 📋 Documentação de padrões para novos comandos
-
-## Conclusão
-
-A nova arquitetura fornece uma base sólida e extensível para o sistema de comandos, implementando padrões de design bem estabelecidos e princípios SOLID. Ela facilita manutenção, testing, e extensão do sistema, enquanto mantém compatibilidade com código existente através de adapters.
+The final architecture implements a simple, efficient, and extensible solution for the command system. It eliminated unnecessary complexities while maintaining the benefits of object-orientation and separation of responsibilities. The structure is easy to understand, maintain, and extend.
